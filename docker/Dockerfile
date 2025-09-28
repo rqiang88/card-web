@@ -1,7 +1,5 @@
 FROM node:22.16
 
-RUN npm install -g yarn
-
 ARG UID=1001
 ARG GID=1001
 
