@@ -96,6 +96,7 @@ export function useConsumptions(params: UseConsumptionsParams = {}) {
               consumptionAt: item.consumptionAt || item.createdAt,
               // 新增字段
               packageName: item.packageName,
+              packageType: item.package?.packType || undefined,
               rechargeInfo: item.rechargeInfo,
             })
           ) || [],

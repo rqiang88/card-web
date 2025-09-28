@@ -44,7 +44,7 @@ export function MemberForm({
     defaultValues: {
       name: '',
       phone: '',
-      gender: 'male',
+      gender: 'female',
       birthday: '',
       registerAt: '',
       state: 'active',

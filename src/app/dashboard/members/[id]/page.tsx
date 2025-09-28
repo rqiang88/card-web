@@ -561,7 +561,10 @@ export default function MemberDetailPage() {
               </div>
 
               <ConsumptionRecordList
-                records={consumptions}
+                records={consumptions.map((consumption) => ({
+                  ...consumption,
+                  packageType: consumption.packageType, // 传递套餐类型信息
+                }))}
                 onDelete={handleDeleteConsumption}
               />
             </CardContent>

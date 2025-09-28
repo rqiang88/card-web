@@ -59,15 +59,27 @@ export default function ConsumptionPage() {
 
   const { createConsumption, deleteConsumption } = useConsumptionActions()
 
-  // 获取性别显示文本
+  // 获取性别显示信息
   const getGenderDisplay = (gender: string) => {
     switch (gender) {
       case 'male':
-        return '男'
+        return {
+          icon: '♂',
+          text: '男',
+          color: 'bg-blue-100 text-blue-700',
+        }
       case 'female':
-        return '女'
+        return {
+          icon: '♀',
+          text: '女',
+          color: 'bg-pink-100 text-pink-700',
+        }
       default:
-        return '未知'
+        return {
+          icon: '?',
+          text: '未知',
+          color: 'bg-gray-100 text-gray-600',
+        }
     }
   }
 
@@ -270,154 +282,171 @@ export default function ConsumptionPage() {
           <CardDescription>最新的会员消费交易记录</CardDescription>
         </CardHeader>
         <CardContent>
-          {/* 表头 */}
-          <div className="grid grid-cols-12 gap-6 items-center py-3 px-6 bg-gray-50 rounded-lg mb-4 text-xs font-medium text-gray-600">
-            <div className="col-span-3 flex items-center space-x-2">
-              <User className="h-4 w-4" />
-              <span>会员信息</span>
-            </div>
-            <div className="col-span-2 flex items-center space-x-2">
-              <Package className="h-4 w-4" />
-              <span>套餐</span>
-            </div>
-            <div className="col-span-2 flex items-center space-x-2">
-              <Calendar className="h-4 w-4" />
-              <span>消费时间</span>
-            </div>
-            <div className="col-span-3 flex items-center space-x-2">
-              <Coins className="h-4 w-4" />
-              <span>关联充值</span>
-            </div>
-            <div className="col-span-2 text-right">
-              <span>消费金额</span>
-            </div>
-          </div>
-
           <div className="space-y-4">
-            {paginatedConsumptions.map((consumption) => (
-              <div
-                key={consumption.id}
-                className="group relative bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-200"
-              >
-                {/* 主要信息区域 */}
-                <div className="grid grid-cols-12 gap-6 items-start">
-                  {/* 左侧：会员信息 */}
-                  <div className="col-span-3 space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <User className="h-4 w-4 text-blue-500" />
-                      <span className="font-semibold text-gray-900 text-sm">
-                        {consumption.memberName || '非会员'}
-                      </span>
-                      {consumption.memberGender && (
-                        <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">
-                          {getGenderDisplay(consumption.memberGender)}
+            {paginatedConsumptions.map((consumption) => {
+              // 获取会员信息
+              const memberName = consumption.memberName || '非会员'
+              const memberPhone = consumption.memberPhone || ''
+              const memberGender = consumption.memberGender || 'unknown'
+
+              const genderInfo = getGenderDisplay(memberGender)
+
+              return (
+                <div
+                  key={consumption.id}
+                  className="bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:border-green-300 hover:from-green-50 hover:to-white"
+                >
+                  <div className="flex items-start justify-between">
+                    {/* 左侧：会员信息 */}
+                    <div className="flex items-center space-x-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-green-500 via-green-600 to-green-700 rounded-full flex items-center justify-center shadow-lg">
+                        <span className="text-xl font-bold text-white">
+                          {memberName.charAt(0)}
                         </span>
-                      )}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-3">
+                          <h3 className="font-bold text-gray-900 text-xl truncate max-w-[200px]">
+                            {memberName}
+                          </h3>
+                          {memberGender !== 'unknown' && (
+                            <div
+                              className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${genderInfo.color}`}
+                            >
+                              <span className="mr-1.5">{genderInfo.icon}</span>
+                              <span>{genderInfo.text}</span>
+                            </div>
+                          )}
+                        </div>
+                        {memberPhone && (
+                          <p className="text-sm text-gray-600 font-medium">
+                            {memberPhone}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    {consumption.memberPhone && (
-                      <div className="flex items-center space-x-2">
-                        <Phone className="h-3 w-3 text-gray-400" />
-                        <span className="text-xs text-gray-600">
-                          {consumption.memberPhone}
-                        </span>
-                      </div>
-                    )}
-                  </div>
 
-                  {/* 套餐信息 */}
-                  <div className="col-span-2">
-                    {consumption.packageName ? (
-                      <div className="flex items-center space-x-1">
-                        <Package className="h-4 w-4 text-green-500" />
-                        <Badge
-                          variant="secondary"
-                          className="text-xs bg-green-50 text-green-700 border-green-200"
-                        >
-                          {consumption.packageName}
-                        </Badge>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-gray-400">无套餐</span>
-                    )}
-                  </div>
+                    {/* 右侧：消费信息和操作 */}
+                    <div className="flex items-center space-x-6">
+                      {/* 消费信息区域 */}
+                      <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 min-w-[350px]">
+                        <div className="grid grid-cols-3 gap-4 text-center">
+                          {/* 套餐信息 */}
+                          <div className="space-y-2">
+                            <div className="text-sm font-bold text-gray-900">
+                              套餐信息
+                            </div>
+                            {consumption.packageName ? (
+                              <div className="text-xs text-gray-600 max-w-[90px] truncate mx-auto bg-green-100 px-2 py-1 rounded">
+                                {consumption.packageName}
+                              </div>
+                            ) : (
+                              <div className="text-xs text-gray-400">无套餐</div>
+                            )}
+                          </div>
 
-                  {/* 消费时间 */}
-                  <div className="col-span-2">
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-purple-500" />
-                      <div className="text-xs">
-                        <div className="font-medium text-gray-900">
-                          {consumption.consumptionAt
-                            ? dayjs(consumption.consumptionAt).format(
-                                'YYYY-MM-DD'
+                          {/* 消费金额/套餐消费 */}
+                          <div className="space-y-2">
+                            {consumption.packageType === 'normal' ? (
+                              // 普通套餐显示关联充值金额
+                              consumption.rechargeInfo ? (
+                                <>
+                                  <div className="text-2xl font-bold text-orange-600">
+                                    ¥{Number(consumption.rechargeInfo.rechargeAmount).toFixed(2)}
+                                  </div>
+                                  <div className="text-xs text-gray-500 font-medium">
+                                    充值金额
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="text-2xl font-bold text-green-600">
+                                    ¥{consumption.amount.toFixed(2)}
+                                  </div>
+                                  <div className="text-xs text-gray-500 font-medium">
+                                    消费金额
+                                  </div>
+                                </>
                               )
-                            : dayjs(consumption.createdAt).format('YYYY-MM-DD')}
+                            ) : (
+                              // 其他套餐类型只显示"套餐消费"
+                              <>
+                                <div className="text-lg font-bold text-blue-600">
+                                  套餐消费
+                                </div>
+                                <div className="text-xs text-gray-500 font-medium">
+                                  {consumption.packageType === 'times' ? '按次消费' : '按金额消费'}
+                                </div>
+                              </>
+                            )}
+                          </div>
+
+                          {/* 关联充值信息 */}
+                          <div className="space-y-2">
+                            {consumption.rechargeInfo ? (
+                              <div className="space-y-1">
+                                <div className="text-sm font-bold text-gray-700">
+                                  {consumption.rechargeInfo.remainingTimes || 0}/{consumption.rechargeInfo.totalTimes || 0}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  剩余次数
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-xs text-gray-400">无关联充值</div>
+                            )}
+                            <div className="text-xs text-gray-500 font-medium">
+                              充值次数
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-gray-500">
+
+                        {/* 消费描述（如果有） */}
+                        {consumption.description && (
+                          <div className="mt-4 pt-3 border-t border-gray-100">
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium">备注：</span>
+                              {consumption.description}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 操作按钮 */}
+                      <div className="flex flex-col space-y-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteConsumption(consumption.id)}
+                          className="h-9 px-4 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300 font-medium"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          删除
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 底部：时间信息 */}
+                  <div className="mt-6 pt-4 border-t border-gray-200">
+                    <div className="flex items-center">
+                      {/* 消费时间 */}
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-green-500 rounded-full shadow-sm"></div>
+                        <span className="text-sm text-gray-600 font-medium">
+                          消费时间：
+                        </span>
+                        <span className="text-sm font-bold text-gray-900">
                           {consumption.consumptionAt
-                            ? dayjs(consumption.consumptionAt).format('HH:mm')
-                            : dayjs(consumption.createdAt).format('HH:mm')}
-                        </div>
+                            ? dayjs(consumption.consumptionAt).format('YYYY-MM-DD HH:mm:ss')
+                            : dayjs(consumption.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                        </span>
                       </div>
                     </div>
-                  </div>
-
-                  {/* 充值信息 */}
-                  <div className="col-span-3">
-                    {consumption.rechargeInfo ? (
-                      <div className="space-y-1">
-                        <div className="flex items-center space-x-2">
-                          <Coins className="h-4 w-4 text-orange-500" />
-                          <span className="text-xs font-medium text-gray-900">
-                            ¥
-                            {Number(
-                              consumption.rechargeInfo.rechargeAmount
-                            ).toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-600">
-                          剩余 {consumption.rechargeInfo.remainingTimes}/
-                          {consumption.rechargeInfo.totalTimes} 次
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-gray-400">无关联充值</span>
-                    )}
-                  </div>
-
-                  {/* 右侧：金额和操作 */}
-                  <div className="col-span-2 flex items-center justify-end space-x-3">
-                    <div className="text-right space-y-1">
-                      <div className="text-xl font-bold text-gray-900">
-                        ¥{consumption.amount.toFixed(2)}
-                      </div>
-                      <div className="flex justify-end">
-                        {getPaymentMethodBadge(consumption.paymentMethod)}
-                      </div>
-                    </div>
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteConsumption(consumption.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
-
-                {/* 消费描述（如果有） */}
-                {consumption.description && (
-                  <div className="mt-4 pt-3 border-t border-gray-100">
-                    <div className="text-sm text-gray-600">
-                      <span className="font-medium">备注：</span>
-                      {consumption.description}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+              )
+            })}
           </div>
         </CardContent>
       </Card>

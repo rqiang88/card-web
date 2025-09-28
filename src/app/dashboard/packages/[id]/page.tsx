@@ -554,6 +554,7 @@ export default function PackageDetailPage() {
                   id: consumption.id,
                   packageName:
                     consumption.packageName || packageInfo?.name || '未知套餐',
+                  packageType: consumption.packageType || packageInfo?.packType, // 传递套餐类型信息
                   amount: consumption.amount,
                   paymentMethod: consumption.paymentMethod,
                   consumptionAt: consumption.consumptionAt,

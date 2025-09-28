@@ -63,6 +63,7 @@ export interface Consumption {
   consumptionAt: string
   // 新增字段
   packageName?: string
+  packageType?: 'amount' | 'times' | 'normal' // 套餐类型
   rechargeInfo?: {
     id: string | number
     totalTimes: number

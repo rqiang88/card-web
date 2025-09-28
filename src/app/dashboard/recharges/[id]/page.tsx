@@ -378,6 +378,7 @@ export default function RechargeDetailPage() {
                     records={consumptions.map((consumption) => ({
                       id: consumption.id,
                       packageName: consumption.packageName,
+                      packageType: consumption.packageType, // 传递套餐类型信息
                       amount: consumption.amount,
                       paymentMethod: consumption.paymentMethod,
                       consumptionAt: consumption.consumptionAt,

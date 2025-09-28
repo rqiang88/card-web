@@ -22,6 +22,7 @@ import { Card, CardContent } from '@/components/ui/card'
 export interface ConsumptionRecord {
   id: string
   packageName?: string
+  packageType?: 'amount' | 'times' | 'normal' // 添加套餐类型
   amount: number
   paymentMethod?: string
   consumptionAt: string
@@ -146,9 +147,19 @@ export function ConsumptionRecordList({
                         <div className="text-lg font-bold text-red-600">
                           -¥{record.amount.toFixed(2)}
                         </div>
-                        <Badge className={paymentConfig.color}>
-                          {paymentConfig.icon} {paymentConfig.label}
-                        </Badge>
+                        {/* 根据套餐类型显示不同内容 */}
+                        {record.packageType === 'normal' ? (
+                          // 普通套餐：显示支付方式
+                          <Badge className={paymentConfig.color}>
+                            {paymentConfig.icon} {paymentConfig.label}
+                          </Badge>
+                        ) : (
+                          // 其他套餐：显示套餐次数消费
+                          <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
+                            <Package className="w-3 h-3 mr-1" />
+                            套餐次数消费
+                          </Badge>
+                        )}
                       </div>
 
                       {onDelete && (
