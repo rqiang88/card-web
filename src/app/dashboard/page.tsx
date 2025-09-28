@@ -30,11 +30,11 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
+  DashboardOverview,
   LatestMember,
+  PopularPackage,
   RecentConsumption,
   RecentRecharge,
-  PopularPackage,
-  DashboardOverview,
   dashboardApi,
 } from '@/lib/api/dashboard'
 
@@ -52,13 +52,14 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [overviewData, members, consumptions, recharges, packages] = await Promise.all([
-          dashboardApi.getOverview(),
-          dashboardApi.getLatestMembers(),
-          dashboardApi.getRecentConsumptions(),
-          dashboardApi.getRecentRecharges(),
-          dashboardApi.getPopularPackages(),
-        ])
+        const [overviewData, members, consumptions, recharges, packages] =
+          await Promise.all([
+            dashboardApi.getOverview(),
+            dashboardApi.getLatestMembers(),
+            dashboardApi.getRecentConsumptions(),
+            dashboardApi.getRecentRecharges(),
+            dashboardApi.getPopularPackages(),
+          ])
         setOverview(overviewData)
         setLatestMembers(members)
         setRecentConsumptions(consumptions)
@@ -162,7 +163,9 @@ export default function DashboardPage() {
                   今日营收
                 </p>
                 <p className="text-3xl font-bold text-foreground mt-1">
-                  {loading ? '加载中...' : `¥${overview?.todayRevenue?.toLocaleString() || '0'}`}
+                  {loading
+                    ? '加载中...'
+                    : `¥${overview?.todayRevenue?.toLocaleString() || '0'}`}
                 </p>
                 <div className="flex items-center mt-3">
                   <ArrowUpRight className="w-4 h-4 text-green-600 mr-1" />
@@ -187,7 +190,9 @@ export default function DashboardPage() {
                   本月营收
                 </p>
                 <p className="text-3xl font-bold text-foreground mt-1">
-                  {loading ? '加载中...' : `¥${overview?.monthlyRevenue?.toLocaleString() || '0'}`}
+                  {loading
+                    ? '加载中...'
+                    : `¥${overview?.monthlyRevenue?.toLocaleString() || '0'}`}
                 </p>
                 <div className="flex items-center mt-3">
                   <ArrowUpRight className="w-4 h-4 text-blue-600 mr-1" />
@@ -212,7 +217,9 @@ export default function DashboardPage() {
                   会员总数
                 </p>
                 <p className="text-3xl font-bold text-foreground mt-1">
-                  {loading ? '加载中...' : (overview?.totalMembers?.toLocaleString() || '0')}
+                  {loading
+                    ? '加载中...'
+                    : overview?.totalMembers?.toLocaleString() || '0'}
                 </p>
                 <div className="flex items-center mt-3">
                   <ArrowUpRight className="w-4 h-4 text-purple-600 mr-1" />
@@ -262,7 +269,9 @@ export default function DashboardPage() {
                   今日充值
                 </p>
                 <p className="text-3xl font-bold text-foreground mt-1">
-                  {loading ? '加载中...' : `¥${overview?.todayRecharge?.toLocaleString() || '0'}`}
+                  {loading
+                    ? '加载中...'
+                    : `¥${overview?.todayRecharge?.toLocaleString() || '0'}`}
                 </p>
                 <div className="flex items-center mt-3">
                   <ArrowUpRight className="w-4 h-4 text-cyan-600 mr-1" />
@@ -430,7 +439,9 @@ export default function DashboardPage() {
                     <div
                       key={pkg.id}
                       className="flex items-center justify-between p-4 bg-gradient-to-r from-muted/30 to-muted/20 rounded-xl hover:from-muted/50 hover:to-muted/30 transition-all duration-300 hover:shadow-sm cursor-pointer"
-                      onClick={() => router.push(`/dashboard/packages/${pkg.id}`)}
+                      onClick={() =>
+                        router.push(`/dashboard/packages/${pkg.id}`)
+                      }
                     >
                       <div className="flex items-center space-x-4">
                         <div

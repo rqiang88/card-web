@@ -87,7 +87,9 @@ export const dashboardApi = {
 
   // 获取热门套餐
   getPopularPackages: async (): Promise<PopularPackage[]> => {
-    const response = await apiClient.get('/packages?sortBy=salesCount&sortOrder=DESC&limit=3')
+    const response = await apiClient.get(
+      '/packages?sortBy=salesCount&sortOrder=DESC&limit=3'
+    )
     const items = response?.data?.items || []
     return items.map((pkg: any) => ({
       id: pkg.id,
@@ -110,18 +112,20 @@ export const dashboardApi = {
     const currentMonth = new Date().toISOString().slice(0, 7)
 
     // 计算今日充值
-    const todayRecharges = rechargesResponse?.data?.items?.filter((r: any) =>
-      r.rechargeAt?.startsWith(today)
-    ) || []
+    const todayRecharges =
+      rechargesResponse?.data?.items?.filter((r: any) =>
+        r.rechargeAt?.startsWith(today)
+      ) || []
     const todayRecharge = todayRecharges.reduce(
       (sum: number, r: any) => sum + parseFloat(r.rechargeAmount || 0),
       0
     )
 
     // 计算本月收入
-    const monthlyRecharges = rechargesResponse?.data?.items?.filter((r: any) =>
-      r.rechargeAt?.startsWith(currentMonth)
-    ) || []
+    const monthlyRecharges =
+      rechargesResponse?.data?.items?.filter((r: any) =>
+        r.rechargeAt?.startsWith(currentMonth)
+      ) || []
     const monthlyRevenue = monthlyRecharges.reduce(
       (sum: number, r: any) => sum + parseFloat(r.rechargeAmount || 0),
       0

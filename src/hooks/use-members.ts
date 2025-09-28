@@ -47,12 +47,14 @@ export function useMembers(params?: QueryParams) {
   return {
     members: data?.items || [],
     total: data?.total || 0,
-    pagination: data ? {
-      total: data.total || 0,
-      page: data.page || 1,
-      limit: data.limit || 10,
-      totalPages: data.totalPages || 1
-    } : undefined,
+    pagination: data
+      ? {
+          total: data.total || 0,
+          page: data.page || 1,
+          limit: data.limit || 10,
+          totalPages: data.totalPages || 1,
+        }
+      : undefined,
     loading: isLoading,
     error,
     mutate,

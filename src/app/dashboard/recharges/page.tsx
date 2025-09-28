@@ -92,16 +92,14 @@ export default function RechargePage() {
   const { createRecharge, deleteRecharge } = useRechargeActions()
 
   // 过滤充值记录 - 添加安全检查
-  const filteredRecharges = (recharges || []).filter(
-    (recharge: any) => {
-      const memberName = recharge.member?.name || recharge.memberName || ''
-      const packageName = recharge.package?.name || recharge.packageName || ''
-      return (
-        memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        packageName.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
-  )
+  const filteredRecharges = (recharges || []).filter((recharge: any) => {
+    const memberName = recharge.member?.name || recharge.memberName || ''
+    const packageName = recharge.package?.name || recharge.packageName || ''
+    return (
+      memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      packageName.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  })
 
   // 分页逻辑
   const {

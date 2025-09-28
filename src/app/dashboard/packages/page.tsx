@@ -311,7 +311,9 @@ export default function PackagesPage() {
                       </td>
                       <td className="p-4">
                         <div className="font-medium">
-                          {pkg.packType === 'normal' ? '永久' : `${pkg.validDay}天`}
+                          {pkg.packType === 'normal'
+                            ? '永久'
+                            : `${pkg.validDay}天`}
                         </div>
                       </td>
                       <td className="p-4">

@@ -144,21 +144,23 @@ export function ConsumptionRecordList({
                     {/* 右侧金额和删除按钮 */}
                     <div className="flex items-center space-x-3">
                       <div className="text-right">
-                        <div className="text-lg font-bold text-red-600">
-                          -¥{record.amount.toFixed(2)}
-                        </div>
-                        {/* 根据套餐类型显示不同内容 */}
+                        {/* 根据套餐类型显示不同的金额和标签 */}
                         {record.packageType === 'normal' ? (
-                          // 普通套餐：显示支付方式
-                          <Badge className={paymentConfig.color}>
-                            {paymentConfig.icon} {paymentConfig.label}
-                          </Badge>
+                          // 普通套餐：显示充值金额
+                          <>
+                            <div className="text-lg font-bold text-green-600">
+                              ¥
+                              {record.rechargeInfo?.rechargeAmount ||
+                                record.amount}
+                            </div>
+                          </>
                         ) : (
-                          // 其他套餐：显示套餐次数消费
-                          <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
-                            <Package className="w-3 h-3 mr-1" />
-                            套餐次数消费
-                          </Badge>
+                          // 非普通套餐：显示套餐按次消费
+                          <>
+                            <div className="text-sm font-bold text-orange-600">
+                              套餐按次消费
+                            </div>
+                          </>
                         )}
                       </div>
 
@@ -175,36 +177,48 @@ export function ConsumptionRecordList({
                     </div>
                   </div>
 
-                  {/* 使用次数信息 - 仅当有充值记录时显示 */}
+                  {/* 充值信息显示 */}
                   {record.rechargeInfo && (
-                    <div className="flex items-center space-x-6 bg-gray-50 rounded-lg p-3">
-                      <div className="flex items-center space-x-2">
-                        <TrendingDown className="w-4 h-4 text-orange-500" />
-                        <span className="text-sm text-muted-foreground">
-                          已使用:
-                        </span>
-                        <span className="font-medium text-orange-600">
-                          {record.rechargeInfo.usedTimes}次
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <CreditCard className="w-4 h-4 text-blue-500" />
+                        <span className="text-sm font-medium text-blue-700">
+                          关联充值金额: ¥{record.rechargeInfo?.rechargeAmount}
                         </span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <TrendingUp className="w-4 h-4 text-blue-500" />
-                        <span className="text-sm text-muted-foreground">
-                          剩余:
-                        </span>
-                        <span className="font-medium text-blue-600">
-                          {record.rechargeInfo.remainingTimes}次
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Package className="w-4 h-4 text-slate-500" />
-                        <span className="text-sm text-muted-foreground">
-                          总次数:
-                        </span>
-                        <span className="font-medium text-slate-600">
-                          {record.rechargeInfo.totalTimes}次
-                        </span>
-                      </div>
+
+                      {/* 使用次数信息 - 仅当有次数套餐时显示 */}
+                      {record.rechargeInfo.totalTimes > 0 && (
+                        <div className="flex items-center space-x-6">
+                          <div className="flex items-center space-x-2">
+                            <TrendingDown className="w-4 h-4 text-orange-500" />
+                            <span className="text-sm text-muted-foreground">
+                              已使用:
+                            </span>
+                            <span className="font-medium text-orange-600">
+                              {record.rechargeInfo.usedTimes}次
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <TrendingUp className="w-4 h-4 text-blue-500" />
+                            <span className="text-sm text-muted-foreground">
+                              剩余:
+                            </span>
+                            <span className="font-medium text-blue-600">
+                              {record.rechargeInfo.remainingTimes}次
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Package className="w-4 h-4 text-slate-500" />
+                            <span className="text-sm text-muted-foreground">
+                              总次数:
+                            </span>
+                            <span className="font-medium text-slate-600">
+                              {record.rechargeInfo.totalTimes}次
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 

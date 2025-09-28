@@ -332,72 +332,83 @@ export default function ConsumptionPage() {
                       <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 min-w-[350px]">
                         <div className="grid grid-cols-3 gap-4 text-center">
                           {/* 套餐信息 */}
-                          <div className="space-y-2">
+                          <div className="space-y-2 flex flex-col items-center justify-center">
                             <div className="text-sm font-bold text-gray-900">
                               套餐信息
                             </div>
                             {consumption.packageName ? (
-                              <div className="text-xs text-gray-600 max-w-[90px] truncate mx-auto bg-green-100 px-2 py-1 rounded">
+                              <div className="text-xs text-gray-600 max-w-[90px] truncate bg-green-100 px-2 py-1 rounded">
                                 {consumption.packageName}
                               </div>
                             ) : (
-                              <div className="text-xs text-gray-400">无套餐</div>
+                              <div className="text-xs text-gray-400">
+                                无套餐
+                              </div>
                             )}
                           </div>
 
-                          {/* 消费金额/套餐消费 */}
-                          <div className="space-y-2">
-                            {consumption.packageType === 'normal' ? (
-                              // 普通套餐显示关联充值金额
-                              consumption.rechargeInfo ? (
-                                <>
-                                  <div className="text-2xl font-bold text-orange-600">
-                                    ¥{Number(consumption.rechargeInfo.rechargeAmount).toFixed(2)}
-                                  </div>
-                                  <div className="text-xs text-gray-500 font-medium">
-                                    充值金额
-                                  </div>
-                                </>
-                              ) : (
-                                <>
-                                  <div className="text-2xl font-bold text-green-600">
-                                    ¥{consumption.amount.toFixed(2)}
-                                  </div>
-                                  <div className="text-xs text-gray-500 font-medium">
-                                    消费金额
-                                  </div>
-                                </>
-                              )
+                          {/* 金额显示区域 */}
+                          <div className="space-y-2 flex flex-col items-center justify-center">
+                            {consumption.rechargeInfo ? (
+                              // 有关联充值信息时，显示充值金额
+                              <>
+                                <div className="text-2xl font-bold text-emerald-600">
+                                  ¥
+                                  {Number(
+                                    consumption.rechargeInfo.rechargeAmount
+                                  ).toFixed(2)}
+                                </div>
+                                <div className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded">
+                                  关联充值金额
+                                </div>
+                              </>
+                            ) : consumption.packageType === 'normal' ? (
+                              // 普通套餐但无关联充值时，显示消费金额
+                              <>
+                                <div className="text-2xl font-bold text-orange-600">
+                                  ¥{consumption.amount.toFixed(2)}
+                                </div>
+                                <div className="text-xs text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded">
+                                  消费金额
+                                </div>
+                              </>
                             ) : (
-                              // 其他套餐类型只显示"套餐消费"
+                              // 其他套餐类型显示套餐消费
                               <>
                                 <div className="text-lg font-bold text-blue-600">
                                   套餐消费
                                 </div>
-                                <div className="text-xs text-gray-500 font-medium">
-                                  {consumption.packageType === 'times' ? '按次消费' : '按金额消费'}
+                                <div className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded">
+                                  {consumption.packageType === 'times'
+                                    ? '按次消费'
+                                    : '按金额消费'}
                                 </div>
                               </>
                             )}
                           </div>
 
-                          {/* 关联充值信息 */}
-                          <div className="space-y-2">
+                          {/* 关联充值详情 */}
+                          <div className="space-y-2 flex flex-col items-center justify-center">
                             {consumption.rechargeInfo ? (
-                              <div className="space-y-1">
-                                <div className="text-sm font-bold text-gray-700">
-                                  {consumption.rechargeInfo.remainingTimes || 0}/{consumption.rechargeInfo.totalTimes || 0}
+                              <div className="space-y-1 flex flex-col items-center">
+                                <div className="text-sm font-bold text-purple-700">
+                                  {consumption.rechargeInfo.remainingTimes || 0}
+                                  /{consumption.rechargeInfo.totalTimes || 0}
                                 </div>
-                                <div className="text-xs text-gray-500">
-                                  剩余次数
+                                <div className="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded">
+                                  剩余/总次数
                                 </div>
                               </div>
                             ) : (
-                              <div className="text-xs text-gray-400">无关联充值</div>
+                              <div className="space-y-1 flex flex-col items-center">
+                                <div className="text-sm font-bold text-gray-400">
+                                  --
+                                </div>
+                                <div className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded">
+                                  无关联充值
+                                </div>
+                              </div>
                             )}
-                            <div className="text-xs text-gray-500 font-medium">
-                              充值次数
-                            </div>
                           </div>
                         </div>
 
@@ -417,7 +428,9 @@ export default function ConsumptionPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleDeleteConsumption(consumption.id)}
+                          onClick={() =>
+                            handleDeleteConsumption(consumption.id)
+                          }
                           className="h-9 px-4 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300 font-medium"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
@@ -438,8 +451,12 @@ export default function ConsumptionPage() {
                         </span>
                         <span className="text-sm font-bold text-gray-900">
                           {consumption.consumptionAt
-                            ? dayjs(consumption.consumptionAt).format('YYYY-MM-DD HH:mm:ss')
-                            : dayjs(consumption.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                            ? dayjs(consumption.consumptionAt).format(
+                                'YYYY-MM-DD HH:mm:ss'
+                              )
+                            : dayjs(consumption.createdAt).format(
+                                'YYYY-MM-DD HH:mm:ss'
+                              )}
                         </span>
                       </div>
                     </div>
