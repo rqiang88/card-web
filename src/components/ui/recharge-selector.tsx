@@ -1,17 +1,19 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { Wallet, Calendar, Clock } from "lucide-react"
+import { Calendar, Clock, Wallet } from 'lucide-react'
+
+import * as React from 'react'
+
+import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { useRecharges } from "@/hooks/use-recharges"
-import type { Recharge } from "@/types"
+} from '@/components/ui/select'
+import { useRecharges } from '@/hooks/use-recharges'
+import type { Recharge } from '@/types'
 
 interface RechargeSelectorProps {
   value?: string
@@ -25,18 +27,22 @@ export function RechargeSelector({
   value,
   onValueChange,
   memberId,
-  placeholder = "选择充值记录",
+  placeholder = '选择充值记录',
   disabled = false,
 }: RechargeSelectorProps) {
-  const [selectedRecharge, setSelectedRecharge] = React.useState<Recharge | null>(null)
+  const [selectedRecharge, setSelectedRecharge] =
+    React.useState<Recharge | null>(null)
 
-  // 获取指定会员的充值记录
-  console.log('🔍 RechargeSelector调试:', { memberId, params: memberId ? { memberId } : undefined })
+  // 获取指定会员的充值记录，只获取活跃状态的记录
+  console.log('🔍 RechargeSelector调试:', {
+    memberId,
+    params: memberId ? { memberId, state: 'active' } : { state: 'active' },
+  })
   const { recharges, loading } = useRecharges(
-    memberId ? { memberId } : undefined
+    memberId ? { memberId, state: 'active' } : { state: 'active' }
   )
 
-  // 显示该会员的所有充值记录，不做任何过滤
+  // 显示该会员的活跃状态充值记录
   const availableRecharges = React.useMemo(() => {
     if (!recharges) return []
     return recharges
@@ -44,8 +50,14 @@ export function RechargeSelector({
 
   // 当选中的充值记录改变时，更新状态（兼容父组件传入 number/string）
   React.useEffect(() => {
-    if (value != null && availableRecharges.length > 0) {
-      const recharge = availableRecharges.find((r: Recharge) => String(r.id) === String(value))
+    if (
+      value !== null &&
+      value !== undefined &&
+      availableRecharges.length > 0
+    ) {
+      const recharge = availableRecharges.find(
+        (r: Recharge) => String(r.id) === String(value)
+      )
       setSelectedRecharge(recharge || null)
     } else {
       setSelectedRecharge(null)
@@ -53,7 +65,9 @@ export function RechargeSelector({
   }, [value, availableRecharges])
 
   const handleSelect = (rechargeId: string) => {
-    const recharge = availableRecharges.find((r: Recharge) => String(r.id) === rechargeId)
+    const recharge = availableRecharges.find(
+      (r: Recharge) => String(r.id) === rechargeId
+    )
     if (recharge) {
       setSelectedRecharge(recharge)
       onValueChange?.(rechargeId, recharge)
@@ -61,29 +75,51 @@ export function RechargeSelector({
   }
 
   const formatExpiryDate = (dateString?: string) => {
-    if (!dateString) return "无限期"
+    if (!dateString) return '无限期'
     const date = new Date(dateString)
     return date.toLocaleDateString('zh-CN')
   }
 
   const getStatusBadge = (recharge: Recharge) => {
-    const status = (recharge as any).status || ((recharge as any).state === 'valid' ? 'active' : (recharge as any).state)
+    const status =
+      (recharge as any).status ||
+      ((recharge as any).state === 'valid' ? 'active' : (recharge as any).state)
     const remaining = recharge.remainingTimes ?? null
     const expiryRaw = (recharge as any).expiryDate || (recharge as any).endDate
     const expired = (() => {
       if (!expiryRaw) return false
       const end = new Date(expiryRaw)
-      const endOfDay = new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999)
+      const endOfDay = new Date(
+        end.getFullYear(),
+        end.getMonth(),
+        end.getDate(),
+        23,
+        59,
+        59,
+        999
+      )
       return endOfDay < new Date()
     })()
 
     if (expired || status === 'expired') {
-      return <Badge variant="destructive" className="text-xs">已过期</Badge>
+      return (
+        <Badge variant="destructive" className="text-xs">
+          已过期
+        </Badge>
+      )
     }
     if (status === 'used' || remaining === 0) {
-      return <Badge variant="secondary" className="text-xs">已用完</Badge>
+      return (
+        <Badge variant="secondary" className="text-xs">
+          已用完
+        </Badge>
+      )
     }
-    return <Badge variant="default" className="text-xs bg-green-100 text-green-800">有效</Badge>
+    return (
+      <Badge variant="default" className="text-xs bg-green-100 text-green-800">
+        有效
+      </Badge>
+    )
   }
 
   if (!memberId) {
@@ -126,7 +162,11 @@ export function RechargeSelector({
   }
 
   return (
-    <Select value={value != null ? String(value) : undefined} onValueChange={handleSelect} disabled={disabled}>
+    <Select
+      value={value !== null && value !== undefined ? String(value) : undefined}
+      onValueChange={handleSelect}
+      disabled={disabled}
+    >
       <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder}>
           {selectedRecharge && (
@@ -134,12 +174,15 @@ export function RechargeSelector({
               <div className="flex items-center space-x-2">
                 <Wallet className="h-4 w-4 text-green-600" />
                 <span className="truncate">
-                  {selectedRecharge.packageName || "套餐充值"}
+                  {selectedRecharge.packageName || '套餐充值'}
                 </span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 {selectedRecharge.totalTimes && (
-                  <span>{selectedRecharge.remainingTimes || 0}/{selectedRecharge.totalTimes}次</span>
+                  <span>
+                    {selectedRecharge.remainingTimes || 0}/
+                    {selectedRecharge.totalTimes}次
+                  </span>
                 )}
                 {getStatusBadge(selectedRecharge)}
               </div>
@@ -149,8 +192,8 @@ export function RechargeSelector({
       </SelectTrigger>
       <SelectContent className="max-w-md">
         {availableRecharges.map((recharge: Recharge) => (
-          <SelectItem 
-            key={recharge.id} 
+          <SelectItem
+            key={recharge.id}
             value={String(recharge.id)}
             className="p-3 mb-2 border border-gray-100 rounded-lg hover:border-green-200 hover:bg-green-50 transition-colors"
           >
@@ -161,7 +204,7 @@ export function RechargeSelector({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <p className="font-medium truncate text-gray-900">
-                    {recharge.packageName || "套餐充值"}
+                    {recharge.packageName || '套餐充值'}
                   </p>
                   {getStatusBadge(recharge)}
                 </div>
@@ -171,13 +214,20 @@ export function RechargeSelector({
                       <div className="flex items-center space-x-1">
                         <Clock className="w-3 h-3" />
                         <span className="font-medium text-green-600">
-                          剩余 {recharge.remainingTimes || 0}/{recharge.totalTimes} 次
+                          剩余 {recharge.remainingTimes || 0}/
+                          {recharge.totalTimes} 次
                         </span>
                       </div>
                     )}
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-3 h-3" />
-                      <span>至 {formatExpiryDate(((recharge as any).expiryDate || (recharge as any).endDate) as string | undefined)}</span>
+                      <span>
+                        至{' '}
+                        {formatExpiryDate(
+                          ((recharge as any).expiryDate ||
+                            (recharge as any).endDate) as string | undefined
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>

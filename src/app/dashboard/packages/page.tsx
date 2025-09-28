@@ -1,16 +1,30 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import dayjs from 'dayjs'
+import {
+  Edit,
+  Eye,
+  Package as PackageIcon,
+  Plus,
+  Search,
+  Trash2,
+} from 'lucide-react'
+
+import * as React from 'react'
+
+import Link from 'next/link'
+
+import { PackageForm } from '@/components/forms/package-form'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/card'
+import { DataPagination } from '@/components/ui/data-pagination'
 import {
   Dialog,
   DialogContent,
@@ -18,35 +32,31 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { PACKAGE_CATEGORIES, PACKAGE_STATUS } from "@/lib/constants";
-import type { Package } from "@/types";
-import { Plus, Search, Trash2, Package as PackageIcon, Edit } from "lucide-react";
-import dayjs from "dayjs";
-import { useToast } from "@/hooks/use-toast";
-import { usePagination } from "@/hooks/use-pagination";
-import { DataPagination } from "@/components/ui/data-pagination";
-import { PackageForm } from "@/components/forms/package-form";
-import { usePackages, usePackageActions } from "@/hooks/use-packages";
-import Link from "next/link";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { usePackageActions, usePackages } from '@/hooks/use-packages'
+import { usePagination } from '@/hooks/use-pagination'
+import { useToast } from '@/hooks/use-toast'
+import { PACKAGE_CATEGORIES, PACKAGE_STATUS } from '@/lib/constants'
+import type { Package } from '@/types'
 
 export default function PackagesPage() {
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState('')
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
   const [selectedPackage, setSelectedPackage] = React.useState<Package | null>(
     null
-  );
-  const { toast } = useToast();
+  )
+  const { toast } = useToast()
 
   // 使用真实的API钩子
   const { packages, loading, error, mutate } = usePackages({
     search: searchTerm,
     page: 1,
     limit: 50, // 获取更多数据用于前端分页
-  });
+  })
 
-  const { createPackage, updatePackage, deletePackage } = usePackageActions();
+  const { createPackage, updatePackage, deletePackage } = usePackageActions()
 
   // 过滤套餐数据
   const filteredPackages = packages.filter(
@@ -54,7 +64,7 @@ export default function PackagesPage() {
       pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (pkg.description &&
         pkg.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  )
 
   // 分页逻辑
   const {
@@ -67,92 +77,92 @@ export default function PackagesPage() {
   } = usePagination(filteredPackages, {
     totalItems: filteredPackages.length,
     itemsPerPage: 6, // 每页显示6个套餐卡片
-  });
+  })
 
   // 获取分类标签样式
   const getCategoryBadge = (category: string) => {
-    const categoryConfig = PACKAGE_CATEGORIES.find((c) => c.value === category);
+    const categoryConfig = PACKAGE_CATEGORIES.find((c) => c.value === category)
     return categoryConfig ? (
       <Badge className={categoryConfig.color}>{categoryConfig.label}</Badge>
-    ) : null;
-  };
+    ) : null
+  }
 
   // 获取状态标签样式
   const getStatusBadge = (status: string) => {
-    const statusConfig = PACKAGE_STATUS.find((s) => s.value === status);
+    const statusConfig = PACKAGE_STATUS.find((s) => s.value === status)
     return statusConfig ? (
       <Badge className={statusConfig.color}>{statusConfig.label}</Badge>
-    ) : null;
-  };
+    ) : null
+  }
 
   // 创建套餐
   const handleCreatePackage = async (data: any) => {
     try {
-      await createPackage(data);
-      setIsCreateDialogOpen(false);
-      mutate(); // 刷新数据
+      await createPackage(data)
+      setIsCreateDialogOpen(false)
+      mutate() // 刷新数据
 
       toast({
-        title: "创建成功",
-        description: "套餐已成功创建",
-      });
+        title: '创建成功',
+        description: '套餐已成功创建',
+      })
     } catch (error: any) {
       toast({
-        title: "创建失败",
+        title: '创建失败',
         description:
-          error.response?.data?.message || "创建套餐时发生错误，请重试",
-        variant: "destructive",
-      });
+          error.response?.data?.message || '创建套餐时发生错误，请重试',
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   // 编辑套餐
   const handleEditPackage = async (data: any) => {
-    if (!selectedPackage) return;
+    if (!selectedPackage) return
 
     try {
-      await updatePackage(selectedPackage.id, data);
-      setIsEditDialogOpen(false);
-      setSelectedPackage(null);
-      mutate(); // 刷新数据
+      await updatePackage(selectedPackage.id, data)
+      setIsEditDialogOpen(false)
+      setSelectedPackage(null)
+      mutate() // 刷新数据
 
       toast({
-        title: "更新成功",
-        description: "套餐已成功更新",
-      });
+        title: '更新成功',
+        description: '套餐已成功更新',
+      })
     } catch (error: any) {
       toast({
-        title: "更新失败",
+        title: '更新失败',
         description:
-          error.response?.data?.message || "更新套餐时发生错误，请重试",
-        variant: "destructive",
-      });
+          error.response?.data?.message || '更新套餐时发生错误，请重试',
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   // 删除套餐
   const handleDeletePackage = async (packageId: string) => {
-    if (!confirm("确定要删除这个套餐吗？此操作不可恢复。")) {
-      return;
+    if (!confirm('确定要删除这个套餐吗？此操作不可恢复。')) {
+      return
     }
 
     try {
-      await deletePackage(packageId);
-      mutate(); // 刷新数据
+      await deletePackage(packageId)
+      mutate() // 刷新数据
 
       toast({
-        title: "删除成功",
-        description: "套餐已成功删除",
-      });
+        title: '删除成功',
+        description: '套餐已成功删除',
+      })
     } catch (error: any) {
       toast({
-        title: "删除失败",
+        title: '删除失败',
         description:
-          error.response?.data?.message || "删除套餐时发生错误，请重试",
-        variant: "destructive",
-      });
+          error.response?.data?.message || '删除套餐时发生错误，请重试',
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -227,12 +237,24 @@ export default function PackagesPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left p-4 font-medium text-gray-900">名称</th>
-                    <th className="text-left p-4 font-medium text-gray-900">状态</th>
-                    <th className="text-left p-4 font-medium text-gray-900">价格</th>
-                    <th className="text-left p-4 font-medium text-gray-900">套餐类型</th>
-                    <th className="text-left p-4 font-medium text-gray-900">有效期</th>
-                    <th className="text-left p-4 font-medium text-gray-900">操作</th>
+                    <th className="text-left p-4 font-medium text-gray-900">
+                      名称
+                    </th>
+                    <th className="text-left p-4 font-medium text-gray-900">
+                      状态
+                    </th>
+                    <th className="text-left p-4 font-medium text-gray-900">
+                      价格
+                    </th>
+                    <th className="text-left p-4 font-medium text-gray-900">
+                      套餐类型
+                    </th>
+                    <th className="text-left p-4 font-medium text-gray-900">
+                      有效期
+                    </th>
+                    <th className="text-left p-4 font-medium text-gray-900">
+                      操作
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -240,7 +262,9 @@ export default function PackagesPage() {
                     <tr key={pkg.id} className="border-b hover:bg-gray-50">
                       <td className="p-4">
                         <div>
-                          <div className="font-medium text-gray-900">{pkg.name}</div>
+                          <div className="font-medium text-gray-900">
+                            {pkg.name}
+                          </div>
                           {pkg.description && (
                             <div className="text-sm text-gray-500 line-clamp-1">
                               {pkg.description}
@@ -249,10 +273,10 @@ export default function PackagesPage() {
                         </div>
                       </td>
                       <td className="p-4">
-                        <Badge 
+                        <Badge
                           className={
-                            pkg.state === 'saling' 
-                              ? 'bg-green-100 text-green-800' 
+                            pkg.state === 'saling'
+                              ? 'bg-green-100 text-green-800'
                               : 'bg-gray-100 text-gray-800'
                           }
                         >
@@ -271,13 +295,19 @@ export default function PackagesPage() {
                       </td>
                       <td className="p-4">
                         <div className="font-medium">
-                          {pkg.packType === "times" ? "按次数" : "按金额"}
+                          {pkg.packType === 'times'
+                            ? '按次数'
+                            : pkg.packType === 'normal'
+                              ? '普通套餐'
+                              : '按金额'}
                         </div>
-                        {pkg.packType === "times" && pkg.totalTimes && (
-                          <div className="text-sm text-gray-500">
-                            {pkg.totalTimes}次
-                          </div>
-                        )}
+                        {(pkg.packType === 'times' ||
+                          pkg.packType === 'normal') &&
+                          pkg.totalTimes && (
+                            <div className="text-sm text-gray-500">
+                              {pkg.totalTimes}次
+                            </div>
+                          )}
                       </td>
                       <td className="p-4">
                         <div className="font-medium">{pkg.validDay}天</div>
@@ -286,15 +316,15 @@ export default function PackagesPage() {
                         <div className="flex space-x-2">
                           <Link href={`/dashboard/packages/${pkg.id}`}>
                             <Button variant="ghost" size="sm">
-                              <PackageIcon className="h-4 w-4" />
+                              <Eye className="h-4 w-4" />
                             </Button>
                           </Link>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              setSelectedPackage(pkg);
-                              setIsEditDialogOpen(true);
+                              setSelectedPackage(pkg)
+                              setIsEditDialogOpen(true)
                             }}
                           >
                             <Edit className="h-4 w-4" />
@@ -348,13 +378,13 @@ export default function PackagesPage() {
             <PackageForm
               initialData={{
                 name: selectedPackage.name,
-                 description: selectedPackage.description,
-                 packType: selectedPackage.packType || 'times',
-                 category: selectedPackage.category,
-                 price: selectedPackage.price || 0,
-                 salePrice: selectedPackage.salePrice || 0,
-                 totalTimes: selectedPackage.totalTimes,
-                 validDay: selectedPackage.validDay || 30,
+                description: selectedPackage.description,
+                packType: selectedPackage.packType || 'times',
+                category: selectedPackage.category,
+                price: selectedPackage.price || 0,
+                salePrice: selectedPackage.salePrice || 0,
+                totalTimes: selectedPackage.totalTimes,
+                validDay: selectedPackage.validDay || 30,
               }}
               onSubmit={handleEditPackage}
             />
@@ -369,11 +399,11 @@ export default function PackagesPage() {
             <PackageIcon className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-4 text-lg font-medium text-gray-900">暂无套餐</h3>
             <p className="mt-2 text-gray-500">
-              {searchTerm ? "没有找到匹配的套餐" : "开始创建您的第一个套餐"}
+              {searchTerm ? '没有找到匹配的套餐' : '开始创建您的第一个套餐'}
             </p>
           </CardContent>
         </Card>
       )}
     </div>
-  );
+  )
 }

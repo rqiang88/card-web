@@ -4,13 +4,13 @@ interface AppState {
   // UI 状态
   sidebarOpen: boolean
   theme: 'light' | 'dark' | 'system'
-  
+
   // 加载状态
   globalLoading: boolean
-  
+
   // 错误状态
   error: string | null
-  
+
   // Actions
   setSidebarOpen: (open: boolean) => void
   toggleSidebar: () => void

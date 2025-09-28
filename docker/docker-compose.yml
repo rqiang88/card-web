@@ -1,0 +1,28 @@
+services:
+  train_app:
+    build:
+      context: .
+      args:
+        PROJECT: ${DOCKER_PROJECT_NAME}
+    container_name: ${DOCKER_CONTAINER_NAME}
+    env_file:
+      - .env
+    ports:
+      - ${DOCKER_PORT}:3000
+    volumes:
+      - ${DOCKER_SSH}:/home/node/.ssh
+      - ${DOCKER_PROJECT}:/home/node/${DOCKER_PROJECT_NAME}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    dns:
+      - 8.8.8.8
+      - 114.114.114.114
+      - 1.1.1.1
+    command:
+      - sh
+      - -c
+      - |
+          cd source
+          yarn install
+          yarn build
+          yarn start

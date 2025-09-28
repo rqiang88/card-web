@@ -1,15 +1,18 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import dayjs from 'dayjs'
+import { Edit, Eye, Plus, Search, Trash2, Users } from 'lucide-react'
+
+import * as React from 'react'
+import { useMemo, useState } from 'react'
+
+import Link from 'next/link'
+
+import { MemberForm } from '@/components/forms/member-form'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DataPagination } from '@/components/ui/data-pagination'
 import {
   Dialog,
   DialogContent,
@@ -17,38 +20,32 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { MemberForm } from "@/components/forms/member-form";
-import { MEMBER_STATUS } from "@/lib/constants";
-import { Plus, Search, Edit, Trash2, Eye, Users } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { usePagination } from "@/hooks/use-pagination";
-import { DataPagination } from "@/components/ui/data-pagination";
-import { useState, useMemo } from "react";
-import { useMembers, useMemberActions } from "@/hooks/use-members";
-import Link from "next/link";
-import type { Member } from "@/types";
-import dayjs from "dayjs";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { useMemberActions, useMembers } from '@/hooks/use-members'
+import { usePagination } from '@/hooks/use-pagination'
+import { useToast } from '@/hooks/use-toast'
+import { MEMBER_STATUS } from '@/lib/constants'
+import type { Member } from '@/types'
 
 export default function MembersPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null)
 
-  const { toast } = useToast();
-  const { members, loading, mutate } = useMembers();
-  const { createMember, updateMember, deleteMember } = useMemberActions();
+  const { toast } = useToast()
+  const { members, loading, error, mutate } = useMembers()
+  const { createMember, updateMember, deleteMember } = useMemberActions()
 
   // 过滤会员
   const filteredMembers = useMemo(() => {
-    if (!members) return [];
-    return members.filter(
+    return (members || []).filter(
       (member) =>
         member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         member.phone?.includes(searchTerm)
-    );
-  }, [members, searchTerm]);
+    )
+  }, [members, searchTerm])
 
   // 分页
   const {
@@ -61,103 +58,101 @@ export default function MembersPage() {
   } = usePagination(filteredMembers, {
     totalItems: filteredMembers.length,
     itemsPerPage: 10,
-  });
-
-
+  })
 
   // 获取性别显示文本
   const getGenderDisplay = (gender: string) => {
     switch (gender) {
       case 'male':
-        return '男';
+        return '男'
       case 'female':
-        return '女';
+        return '女'
       default:
-        return '未知';
+        return '未知'
     }
-  };
+  }
 
   // 获取状态徽章
   const getStatusBadge = (status: string) => {
-    const statusConfig = MEMBER_STATUS.find(s => s.value === status);
+    const statusConfig = MEMBER_STATUS.find((s) => s.value === status)
     if (statusConfig) {
-      return <Badge className={statusConfig.color}>{statusConfig.label}</Badge>;
+      return <Badge className={statusConfig.color}>{statusConfig.label}</Badge>
     }
-    return <Badge className="bg-gray-100 text-gray-800">未知</Badge>;
-  };
+    return <Badge className="bg-gray-100 text-gray-800">未知</Badge>
+  }
 
   // 格式化日期显示
   const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return '-';
-    return dayjs(dateString).format('YYYY-MM-DD');
-  };
+    if (!dateString) return '-'
+    return dayjs(dateString).format('YYYY-MM-DD')
+  }
 
   // 格式化生日显示
   const formatBirthday = (birthday?: string) => {
-    if (!birthday) return '-';
-    return dayjs(birthday).format('YYYY-MM-DD');
-  };
+    if (!birthday) return '-'
+    return dayjs(birthday).format('YYYY-MM-DD')
+  }
 
   // 创建会员
   const handleCreateMember = async (data: any) => {
     try {
-      await createMember(data);
+      await createMember(data)
       toast({
-        title: "创建成功",
-        description: "会员已成功创建",
-      });
-      setIsCreateDialogOpen(false);
-      mutate();
+        title: '创建成功',
+        description: '会员已成功创建',
+      })
+      setIsCreateDialogOpen(false)
+      mutate()
     } catch (error: any) {
       toast({
-        title: "创建失败",
-        description: error.message || "创建会员时发生错误",
-        variant: "destructive",
-      });
+        title: '创建失败',
+        description: error.message || '创建会员时发生错误',
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   // 编辑会员
   const handleEditMember = async (data: any) => {
-    if (!selectedMember) return;
+    if (!selectedMember) return
 
     try {
-      await updateMember(selectedMember.id, data);
+      await updateMember(selectedMember.id, data)
       toast({
-        title: "更新成功",
-        description: "会员信息已成功更新",
-      });
-      setIsEditDialogOpen(false);
-      setSelectedMember(null);
-      mutate();
+        title: '更新成功',
+        description: '会员信息已成功更新',
+      })
+      setIsEditDialogOpen(false)
+      setSelectedMember(null)
+      mutate()
     } catch (error: any) {
       toast({
-        title: "更新失败",
-        description: error.message || "更新会员信息时发生错误",
-        variant: "destructive",
-      });
+        title: '更新失败',
+        description: error.message || '更新会员信息时发生错误',
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   // 删除会员
   const handleDeleteMember = async (id: string) => {
-    if (!confirm("确定要删除这个会员吗？")) return;
+    if (!confirm('确定要删除这个会员吗？')) return
 
     try {
-      await deleteMember(id);
+      await deleteMember(id)
       toast({
-        title: "删除成功",
-        description: "会员已成功删除",
-      });
-      mutate();
+        title: '删除成功',
+        description: '会员已成功删除',
+      })
+      mutate()
     } catch (error: any) {
       toast({
-        title: "删除失败",
-        description: error.message || "删除会员时发生错误",
-        variant: "destructive",
-      });
+        title: '删除失败',
+        description: error.message || '删除会员时发生错误',
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -230,10 +225,16 @@ export default function MembersPage() {
                 >
                   <div className="font-medium">{member.name}</div>
                   <div className="text-gray-600">{member.phone}</div>
-                  <div className="text-gray-600">{getGenderDisplay(member.gender)}</div>
-                  <div className="text-gray-600">{formatBirthday(member.birthday)}</div>
+                  <div className="text-gray-600">
+                    {getGenderDisplay(member.gender)}
+                  </div>
+                  <div className="text-gray-600">
+                    {formatBirthday(member.birthday)}
+                  </div>
                   <div>{getStatusBadge(member.state)}</div>
-                  <div className="text-gray-600">{formatDate(member.registerAt)}</div>
+                  <div className="text-gray-600">
+                    {formatDate(member.registerAt)}
+                  </div>
                   <div className="flex space-x-2">
                     <Link href={`/dashboard/members/${member.id}`}>
                       <Button variant="ghost" size="sm">
@@ -244,8 +245,8 @@ export default function MembersPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => {
-                        setSelectedMember(member);
-                        setIsEditDialogOpen(true);
+                        setSelectedMember(member)
+                        setIsEditDialogOpen(true)
                       }}
                     >
                       <Edit className="h-4 w-4" />
@@ -269,7 +270,9 @@ export default function MembersPage() {
       {totalPages > 1 && (
         <div className="space-y-4">
           <div className="text-sm text-muted-foreground text-center">
-            显示 {startIndex + 1} 到 {Math.min(endIndex, filteredMembers.length)} 条，共 {filteredMembers.length} 条记录
+            显示 {startIndex + 1} 到{' '}
+            {Math.min(endIndex, filteredMembers.length)} 条，共{' '}
+            {filteredMembers.length} 条记录
           </div>
           <DataPagination
             currentPage={currentPage}
@@ -309,5 +312,5 @@ export default function MembersPage() {
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

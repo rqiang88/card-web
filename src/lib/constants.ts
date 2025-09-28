@@ -1,11 +1,12 @@
 // API 相关常量
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001/api'
 
 // 调试信息
 if (typeof window !== 'undefined') {
   console.log('环境变量调试:', {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    API_BASE_URL: API_BASE_URL
+    API_BASE_URL: API_BASE_URL,
   })
 }
 
@@ -27,7 +28,11 @@ export const PAGINATION = {
 export const MEMBER_LEVELS = [
   { value: 'normal', label: '普通会员', color: 'bg-gray-100 text-gray-800' },
   { value: 'vip', label: 'VIP会员', color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'diamond', label: '钻石会员', color: 'bg-purple-100 text-purple-800' },
+  {
+    value: 'diamond',
+    label: '钻石会员',
+    color: 'bg-purple-100 text-purple-800',
+  },
 ] as const
 
 // 会员状态选项
@@ -47,13 +52,18 @@ export const GENDER_OPTIONS = [
 export const PACKAGE_TYPES = [
   { value: 'amount', label: '按金额' },
   { value: 'times', label: '按次数' },
+  { value: 'normal', label: '普通套餐' },
 ] as const
 
 // 套餐分类选项
 export const PACKAGE_CATEGORIES = [
   { value: 'fitness', label: '健身', color: 'bg-blue-100 text-blue-800' },
   { value: 'beauty', label: '美容', color: 'bg-pink-100 text-pink-800' },
-  { value: 'entertainment', label: '娱乐', color: 'bg-green-100 text-green-800' },
+  {
+    value: 'entertainment',
+    label: '娱乐',
+    color: 'bg-green-100 text-green-800',
+  },
   { value: 'other', label: '其他', color: 'bg-gray-100 text-gray-800' },
 ] as const
 
@@ -111,12 +121,12 @@ export const NAVIGATION_ITEMS = [
   },
   {
     title: '充值管理',
-    href: '/dashboard/recharge',
+    href: '/dashboard/recharges',
     icon: 'Wallet',
   },
   {
     title: '消费管理',
-    href: '/dashboard/consumption',
+    href: '/dashboard/consumptions',
     icon: 'CreditCard',
   },
 ] as const
@@ -150,12 +160,17 @@ export const VALIDATION_RULES = {
 
 // 错误消息
 export const ERROR_MESSAGES = {
-  NETWORK_ERROR: '网络连接失败，请检查网络设置',
-  UNAUTHORIZED: '登录已过期，请重新登录',
-  FORBIDDEN: '权限不足，无法执行此操作',
-  NOT_FOUND: '请求的资源不存在',
-  SERVER_ERROR: '服务器内部错误，请稍后重试',
-  VALIDATION_ERROR: '数据验证失败，请检查输入内容',
+  NETWORK_ERROR: '网络错误，请稍后重试',
+  SERVER_ERROR: '服务器错误',
+  NOT_FOUND: '资源未找到',
+  UNAUTHORIZED: '未授权，请重新登录',
+  FORBIDDEN: '权限不足',
+  VALIDATION_ERROR: '数据验证失败',
+}
+
+export const ENV = {
+  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  API_BASE_URL: API_BASE_URL,
 }
 
 // 成功消息

@@ -1,7 +1,9 @@
-"use client"
+'use client'
 
 import { SWRConfig } from 'swr'
+
 import React, { ReactNode } from 'react'
+
 import { apiClient } from '@/lib/api'
 
 interface SWRProviderProps {
@@ -9,78 +11,62 @@ interface SWRProviderProps {
 }
 
 // 全局fetcher函数
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001/api'
 
-export const fetcher = async (url: string) => {
-  console.log('🚀 SWR Fetcher调用:', { url, timestamp: new Date().toISOString() })
-  
-  // 如果URL以/api开头，直接使用；否则拼接API_BASE_URL
-  const fullUrl = url.startsWith('/api') ? url : `${API_BASE_URL}${url}`
-  console.log('🌐 请求URL:', fullUrl)
-  
-  // 获取认证token - 确保在客户端环境中获取
-  let token: string | null = null
-  if (typeof window !== 'undefined') {
-    token = localStorage.getItem('token')
-    // 如果没有token，设置一个测试token
-    if (!token) {
-      console.log('🔑 未找到token，设置测试token')
-      localStorage.setItem('token', 'test-token')
-      token = 'test-token'
-    }
-  }
-  console.log('🔑 Token状态:', token ? `有token: ${token.substring(0, 10)}...` : '无token')
-  
+export const newFetcher = async (url: string) => {
+  console.log('🚀🚀🚀 FETCHER 被调用!!! URL:', url)
+  console.log('🚀🚀🚀 调用栈:', new Error().stack)
+
   try {
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    }
-    
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
-    
-    const response = await fetch(fullUrl, { headers })
-    console.log('📡 响应状态:', response.status, response.statusText)
-    
+    const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`
+    console.log('🚀🚀🚀 完整URL:', fullUrl)
+
+    // 对于 GET 请求移除自定义 headers，避免触发 CORS 预检
+    const response = await fetch(fullUrl)
+
+    console.log('🚀🚀🚀 响应状态:', response.status)
+
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('❌ 请求失败:', { status: response.status, statusText: response.statusText, errorText })
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-    
-    const data = await response.json()
-    console.log('✅ 请求成功:', { url, dataType: typeof data, hasItems: data?.items?.length })
-    return data
+
+    const raw = await response.json()
+    // 统一解包后端的全局响应格式 { success, data, message, timestamp }
+    const unwrapped =
+      raw && typeof raw === 'object' && 'data' in raw ? (raw as any).data : raw
+    console.log('🚀🚀🚀 Fetcher 原始数据:', raw)
+    console.log('🚀🚀🚀 Fetcher 解包后的返回数据:', unwrapped)
+    return unwrapped
   } catch (error) {
-    console.error('💥 Fetcher异常:', { 
-      url, 
-      error: error instanceof Error ? error.message : String(error)
-    })
+    console.error('🚀🚀🚀 Fetcher 错误:', error)
     throw error
   }
 }
 
+// 导出别名以保持兼容性
+export const fetcher = newFetcher
+
 export function SWRProvider({ children }: { children: ReactNode }) {
-  console.log('🔧 SWRProvider初始化 - 最新版本')
-  
+  console.log('🔧 ===== SWRProvider 初始化 (简化版) =====')
+  console.log('🔧 Fetcher函数类型:', typeof newFetcher)
+  console.log('🔧 Fetcher函数名称:', newFetcher.name)
+
   return (
-    <SWRConfig value={{
-      refreshInterval: 0,
-      revalidateOnFocus: false,
-      revalidateOnMount: true,
-      revalidateOnReconnect: true,
-      fetcher: fetcher,
-      dedupingInterval: 0, // 禁用去重
-      errorRetryCount: 3,
-      errorRetryInterval: 5000,
-      onError: (error: any, key: string) => {
-        console.error('🔥 SWR错误:', { key, error: error?.message })
-      },
-      onSuccess: (data: any, key: string) => {
-        console.log('✅ SWR成功:', { key, hasData: !!data })
-      }
-    }}>
+    <SWRConfig
+      value={{
+        fetcher: newFetcher,
+        onSuccess: (data: any, key: string) => {
+          console.log('🔧 SWR onSuccess:', { key, dataType: typeof data })
+        },
+        onError: (error: any, key: string) => {
+          console.log('🔧 SWR onError:', {
+            key,
+            error: (error as Error).message,
+          })
+        },
+      }}
+    >
       {children}
     </SWRConfig>
   )

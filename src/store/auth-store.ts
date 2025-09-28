@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+
 import { authApi } from '@/lib/api'
 import type { User } from '@/types'
 
@@ -8,7 +9,7 @@ interface AuthState {
   token: string | null
   isAuthenticated: boolean
   isLoading: boolean
-  
+
   // Actions
   login: (username: string, password: string) => Promise<void>
   logout: () => void
@@ -30,7 +31,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await authApi.login(username, password)
           const { user, token } = response.data
-          
+
           set({
             user,
             token,
@@ -73,7 +74,7 @@ export const useAuthStore = create<AuthState>()(
 
       setToken: (token: string | null) => {
         set({ token, isAuthenticated: !!token })
-        
+
         if (typeof window !== 'undefined') {
           if (token) {
             localStorage.setItem('token', token)
@@ -91,7 +92,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await authApi.getProfile()
           const user = response.data
-          
+
           set({
             user,
             isAuthenticated: true,
@@ -105,7 +106,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isLoading: false,
           })
-          
+
           if (typeof window !== 'undefined') {
             localStorage.removeItem('token')
           }

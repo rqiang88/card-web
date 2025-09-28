@@ -1,8 +1,13 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PackageIcon as Package, Search, X } from 'lucide-react'
+
+import * as React from 'react'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { DataPagination } from '@/components/ui/data-pagination'
 import {
   Dialog,
   DialogContent,
@@ -10,55 +15,52 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { DataPagination } from "@/components/ui/data-pagination";
-import { Search, PackageIcon as Package, X } from "lucide-react";
-import { usePackages } from "@/hooks/use-packages";
-import { usePagination } from "@/hooks/use-pagination";
-import type { Package as PackageType } from "@/types";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { usePackages } from '@/hooks/use-packages'
+import { usePagination } from '@/hooks/use-pagination'
+import type { Package as PackageType } from '@/types'
 
 interface PackageSelectorProps {
-  value?: string;
-  onValueChange: (packageId: string, packageData: PackageType) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  selectedPackage?: PackageType | null;
+  value?: string
+  onValueChange: (packageId: string, packageData: PackageType) => void
+  placeholder?: string
+  disabled?: boolean
+  selectedPackage?: PackageType | null
 }
 
 export function PackageSelector({
   value,
   onValueChange,
-  placeholder = "选择套餐",
+  placeholder = '选择套餐',
   disabled = false,
   selectedPackage,
 }: PackageSelectorProps) {
-  const [open, setOpen] = React.useState(false);
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [currentPage, setCurrentPage] = React.useState(1);
+  const [open, setOpen] = React.useState(false)
+  const [searchTerm, setSearchTerm] = React.useState('')
+  const [currentPage, setCurrentPage] = React.useState(1)
 
   // 获取套餐数据
   const { packages, loading, error } = usePackages({
     search: searchTerm,
     page: currentPage,
     limit: 10,
-  });
+  })
 
   // 调试信息
   React.useEffect(() => {
-    console.log("PackageSelector - packages:", packages);
-    console.log("PackageSelector - loading:", loading);
-    console.log("PackageSelector - error:", error);
-  }, [packages, loading, error]);
+    console.log('PackageSelector - packages:', packages)
+    console.log('PackageSelector - loading:', loading)
+    console.log('PackageSelector - error:', error)
+  }, [packages, loading, error])
 
   // 只显示激活状态的套餐（后端返回的字段是state，null表示激活状态）
   const activePackages = packages.filter(
-    (pkg) => (pkg as any).state === "saling"
-  );
+    (pkg) => (pkg as any).state === 'saling'
+  )
 
-  console.log("PackageSelector - activePackages:", activePackages);
-  console.log("PackageSelector - raw packages data:", packages);
+  console.log('PackageSelector - activePackages:', activePackages)
+  console.log('PackageSelector - raw packages data:', packages)
 
   // 分页逻辑
   const {
@@ -68,42 +70,43 @@ export function PackageSelector({
   } = usePagination(activePackages, {
     totalItems: activePackages.length,
     itemsPerPage: 10,
-  });
+  })
 
   const handleSelectPackage = (packageData: PackageType) => {
-    onValueChange(packageData.id, packageData);
-    setOpen(false);
-  };
+    onValueChange(packageData.id, packageData)
+    setOpen(false)
+  }
 
   const handleClearSelection = () => {
-    onValueChange("", {} as PackageType);
-  };
+    onValueChange('', {} as PackageType)
+  }
 
   const getCategoryBadge = (category: string) => {
     const categoryConfig = {
-      fitness: { label: "健身", color: "bg-green-100 text-green-800" },
-      beauty: { label: "美容", color: "bg-pink-100 text-pink-800" },
-      entertainment: { label: "娱乐", color: "bg-blue-100 text-blue-800" },
-      other: { label: "其他", color: "bg-gray-100 text-gray-800" },
-    }[category] || { label: category, color: "bg-gray-100 text-gray-800" };
+      fitness: { label: '健身', color: 'bg-green-100 text-green-800' },
+      beauty: { label: '美容', color: 'bg-pink-100 text-pink-800' },
+      entertainment: { label: '娱乐', color: 'bg-blue-100 text-blue-800' },
+      other: { label: '其他', color: 'bg-gray-100 text-gray-800' },
+    }[category] || { label: category, color: 'bg-gray-100 text-gray-800' }
 
     return (
       <Badge className={categoryConfig.color}>{categoryConfig.label}</Badge>
-    );
-  };
+    )
+  }
 
   const getTypeBadge = (packType: string) => {
     // 如果是按次数类型，不显示标签
-    if (packType === "times") {
-      return null;
+    if (packType === 'times') {
+      return null
     }
 
     const typeConfig = {
-      amount: { label: "按金额", color: "bg-purple-100 text-purple-800" },
-    }[packType] || { label: packType, color: "bg-gray-100 text-gray-800" };
+      amount: { label: '按金额', color: 'bg-purple-100 text-purple-800' },
+      normal: { label: '普通套餐', color: 'bg-orange-100 text-orange-800' },
+    }[packType] || { label: packType, color: 'bg-gray-100 text-gray-800' }
 
-    return <Badge className={typeConfig.color}>{typeConfig.label}</Badge>;
-  };
+    return <Badge className={typeConfig.color}>{typeConfig.label}</Badge>
+  }
 
   return (
     <div className="space-y-2">
@@ -130,9 +133,13 @@ export function PackageSelector({
               <div className="flex items-center space-x-3">
                 <div className="text-right text-sm">
                   <div className="text-green-600 font-medium">
-                    ¥{parseFloat(String(selectedPackage.salePrice || 0)).toFixed(2)}
+                    ¥
+                    {parseFloat(String(selectedPackage.salePrice || 0)).toFixed(
+                      2
+                    )}
                   </div>
-                  {selectedPackage.packType === "times" && (
+                  {(selectedPackage.packType === 'times' ||
+                    selectedPackage.packType === 'normal') && (
                     <div className="text-gray-500">
                       {selectedPackage.totalTimes}次
                     </div>
@@ -176,8 +183,8 @@ export function PackageSelector({
                 placeholder="搜索套餐名称或描述..."
                 value={searchTerm}
                 onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
+                  setSearchTerm(e.target.value)
+                  setCurrentPage(1)
                 }}
                 className="pl-10"
               />
@@ -195,7 +202,7 @@ export function PackageSelector({
                 </div>
               ) : paginatedPackages.length === 0 ? (
                 <div className="flex items-center justify-center h-32 text-gray-500">
-                  {searchTerm ? "未找到匹配的套餐" : "暂无套餐数据"}
+                  {searchTerm ? '未找到匹配的套餐' : '暂无套餐数据'}
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -229,15 +236,29 @@ export function PackageSelector({
                           </div>
                           <div className="text-right">
                             <div className="text-xl font-bold text-green-600">
-                              ¥{parseFloat((packageData as any).salePrice || packageData.price || "0").toFixed(2)}
+                              ¥
+                              {parseFloat(
+                                (packageData as any).salePrice ||
+                                  packageData.price ||
+                                  '0'
+                              ).toFixed(2)}
                             </div>
-                            {((packageData as any).packType ||
-                              packageData.type) === "times" && (
+                            {(((packageData as any).packType ||
+                              packageData.type) === 'times' ||
+                              ((packageData as any).packType ||
+                                packageData.type) === 'normal') && (
                               <div className="text-sm text-gray-600 mt-1">
-                                {packageData.totalTimes}次 ·{" "}
-                                {(packageData as any).validDay ||
-                                  packageData.validityDays}
-                                天有效
+                                {packageData.totalTimes}次
+                                {((packageData as any).packType ||
+                                  packageData.type) === 'times' && (
+                                  <span>
+                                    {' '}
+                                    ·{' '}
+                                    {(packageData as any).validDay ||
+                                      packageData.validityDays}
+                                    天有效
+                                  </span>
+                                )}
                               </div>
                             )}
                           </div>
@@ -263,5 +284,5 @@ export function PackageSelector({
         </Dialog>
       )}
     </div>
-  );
+  )
 }

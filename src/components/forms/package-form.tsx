@@ -1,18 +1,11 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import * as React from 'react'
+
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -21,15 +14,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { packageSchema } from "@/lib/validations";
-import { PACKAGE_CATEGORIES, PACKAGE_TYPES } from "@/lib/constants";
-import type { PackageFormData } from "@/types";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { PACKAGE_CATEGORIES, PACKAGE_TYPES } from '@/lib/constants'
+import { packageSchema } from '@/lib/validations'
+import type { PackageFormData } from '@/types'
 
 interface PackageFormProps {
-  initialData?: Partial<PackageFormData>;
-  onSubmit: (data: any) => Promise<void>;
-  loading?: boolean;
+  initialData?: Partial<PackageFormData>
+  onSubmit: (data: any) => Promise<void>
+  loading?: boolean
 }
 
 export function PackageForm({
@@ -40,19 +41,19 @@ export function PackageForm({
   const form = useForm<PackageFormData>({
     resolver: zodResolver(packageSchema),
     defaultValues: {
-      name: initialData?.name || "",
-      description: initialData?.description || "",
-      packType: initialData?.packType || "times",
+      name: initialData?.name || '',
+      description: initialData?.description || '',
+      packType: initialData?.packType || 'times',
       category: initialData?.category,
       price: initialData?.price,
       salePrice: initialData?.salePrice || 0,
       totalTimes: initialData?.totalTimes || 10,
       validDay: initialData?.validDay || 365,
-      state: initialData?.state || "saling",
+      state: initialData?.state || 'saling',
     },
-  });
+  })
 
-  const watchType = form.watch("packType");
+  const watchType = form.watch('packType')
 
   const handleSubmit = async (data: PackageFormData) => {
     try {
@@ -64,21 +65,26 @@ export function PackageForm({
         ...(data.category && { category: data.category }),
         ...(data.price && { price: data.price }), // 原价
         salePrice: data.salePrice, // 现价/售价
-        totalTimes: data.packType === "times" ? data.totalTimes : undefined,
-        validDay: data.validDay, // 有效天数
+        totalTimes:
+          data.packType === 'times'
+            ? data.totalTimes
+            : data.packType === 'normal'
+              ? 1
+              : undefined,
+        ...(data.packType !== 'normal' && { validDay: data.validDay }), // 普通套餐不设置有效期
         state: data.state, // 状态
-      };
+      }
 
-      await onSubmit(submitData);
+      await onSubmit(submitData)
 
       // 如果不是编辑模式，重置表单
       if (!initialData) {
-        form.reset();
+        form.reset()
       }
     } catch (error) {
-      console.error("表单提交失败:", error);
+      console.error('表单提交失败:', error)
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -98,14 +104,17 @@ export function PackageForm({
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="state"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>状态 *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="请选择状态" />
@@ -163,34 +172,36 @@ export function PackageForm({
                   </SelectContent>
                 </Select>
                 <FormDescription>
-                  按次数：固定使用次数；按金额：充值金额使用
+                  按次数：固定使用次数；按金额：充值金额使用；普通套餐：一次性消费，无有效期限制
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* 有效期 */}
-          <FormField
-            control={form.control}
-            name="validDay"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>有效期（天）*</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    min="1"
-                    placeholder="30"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormDescription>套餐购买后的有效使用天数</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* 有效期 - 普通套餐不显示 */}
+          {watchType !== 'normal' && (
+            <FormField
+              control={form.control}
+              name="validDay"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>有效期（天）*</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="1"
+                      placeholder="30"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormDescription>套餐购买后的有效使用天数</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -216,8 +227,8 @@ export function PackageForm({
             )}
           />
 
-          {/* 使用次数 - 仅在按次数类型时显示 */}
-          {watchType === "times" && (
+          {/* 使用次数 - 在按次数类型和普通套餐时显示 */}
+          {(watchType === 'times' || watchType === 'normal') && (
             <FormField
               control={form.control}
               name="totalTimes"
@@ -230,16 +241,20 @@ export function PackageForm({
                       min="1"
                       placeholder="1"
                       {...field}
+                      value={watchType === 'normal' ? 1 : field.value}
+                      disabled={watchType === 'normal'}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
+                  {watchType === 'normal' && (
+                    <FormDescription>普通套餐固定为1次使用</FormDescription>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
             />
           )}
         </div>
-
 
         {/* 提交按钮 */}
         <div className="flex justify-end space-x-4 pt-4">
@@ -252,10 +267,10 @@ export function PackageForm({
             重置
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? "提交中..." : initialData ? "更新套餐" : "创建套餐"}
+            {loading ? '提交中...' : initialData ? '更新套餐' : '创建套餐'}
           </Button>
         </div>
       </form>
     </Form>
-  );
+  )
 }

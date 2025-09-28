@@ -15,6 +15,7 @@ export interface Member {
   phone: string
   email?: string
   gender: 'male' | 'female'
+  level: 'normal' | 'vip' | 'diamond'
   birthday?: string
   registerAt?: string | undefined
   state: 'active' | 'disabled'
@@ -30,18 +31,18 @@ export interface Package {
   id: string
   name: string
   description?: string
-  packType: 'amount' | 'times'  // 对应后端的packType字段
+  packType: 'amount' | 'times' | 'normal' // 对应后端的packType字段
   category: 'fitness' | 'beauty' | 'entertainment' | 'other'
   price: number
-  memberPrice?: number  // 会员价格
-  salePrice?: number    // 销售价格
+  memberPrice?: number // 会员价格
+  salePrice?: number // 销售价格
   totalTimes?: number
-  validDay: number      // 对应后端的validDay字段
-  state: 'saling' | 'closed'  // 对应后端的state字段
-  position?: number     // 排序
-  salesCount?: number   // 销售数量
-  icon?: string         // 图标URL
-  payload?: object      // 其他字段
+  validDay: number // 对应后端的validDay字段
+  state: 'saling' | 'closed' // 对应后端的state字段
+  position?: number // 排序
+  salesCount?: number // 销售数量
+  icon?: string // 图标URL
+  payload?: object // 其他字段
   createdAt: string
   updatedAt: string
 }
@@ -81,6 +82,8 @@ export interface Recharge {
     id: string | number
     name: string
     phone?: string
+    state?: string
+    gender?: 'male' | 'female'
   }
   memberName?: string
   packageId?: string | number
@@ -98,7 +101,6 @@ export interface Recharge {
   startDate?: string
   endDate?: string
   expiryDate?: string
-  status: 'active' | 'expired' | 'used'
   state?: string
   rechargeAt?: string
   operatorId?: string | number
@@ -137,12 +139,10 @@ export interface PaginationParams {
 
 export interface PaginationResponse<T> {
   items: T[]
-  pagination: {
-    total: number
-    page: number
-    limit: number
-    totalPages: number
-  }
+  total: number
+  page: number
+  limit: number
+  totalPages: number
 }
 
 // 查询参数类型
@@ -188,7 +188,7 @@ export interface MemberFormData {
 export interface PackageFormData {
   name: string
   description?: string
-  packType: 'amount' | 'times'
+  packType: 'amount' | 'times' | 'normal'
   category: 'fitness' | 'beauty' | 'entertainment' | 'other'
   price: number
   memberPrice?: number
@@ -219,6 +219,6 @@ export interface RechargeFormData {
   totalTimes?: number
   validityDays?: number
   paymentType: 'cash' | 'card' | 'alipay' | 'wechat'
-  status: 'active' | 'completed' | 'expired' | 'disabled'
+  state: 'active' | 'completed' | 'expired' | 'disabled'
   remark?: string
 }

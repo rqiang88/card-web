@@ -1,35 +1,58 @@
 import useSWR from 'swr'
+
+import { fetcher } from '@/components/providers/swr-provider'
 import { membersApi } from '@/lib/api'
 import type { Member, PaginationResponse, QueryParams } from '@/types'
 
 // 获取会员列表
 export function useMembers(params?: QueryParams) {
-  const queryString = params ? new URLSearchParams(params as any).toString() : ''
-  const swrKey = `/members${queryString ? `?${queryString}` : ''}`
-  
-  console.log('会员Hook调试:', { swrKey, params })
-  
-  const { data, error, mutate, isLoading } = useSWR<PaginationResponse<Member>>(
+  console.log('🚀 useMembers hook 被调用，参数:', params)
+
+  const queryString = params
+    ? new URLSearchParams(params as any).toString()
+    : ''
+  const swrKey = queryString ? `/members?${queryString}` : '/members'
+
+  console.log('🚀 useMembers SWR Key:', swrKey)
+
+  const { data, error, mutate, isLoading, isValidating } = useSWR<
+    PaginationResponse<Member>
+  >(
     swrKey,
-    null, // 使用全局fetcher
+    fetcher, // 添加缺失的fetcher参数
     {
+      revalidateOnMount: true,
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
+      dedupingInterval: 2000, // 2秒内去重
+      refreshInterval: 0, // 不自动刷新
       onSuccess: (data) => {
-        console.log('会员API调用成功:', data)
+        console.log('🚀 useMembers SWR onSuccess:', data)
       },
-      onError: (err) => {
-        console.error('会员API调用失败:', err)
-      }
+      onError: (error) => {
+        console.log('🚀 useMembers SWR onError:', error)
+      },
     }
   )
 
-  console.log('会员Hook状态:', { data, error, isLoading })
+  console.log('🚀 useMembers SWR 状态:', {
+    data,
+    error,
+    isLoading,
+    isValidating,
+    members: data?.items || [],
+    total: data?.total || 0,
+  })
 
   return {
     members: data?.items || [],
-    total: data?.pagination?.total || 0,
-    pagination: data?.pagination,
+    total: data?.total || 0,
+    pagination: data ? {
+      total: data.total || 0,
+      page: data.page || 1,
+      limit: data.limit || 10,
+      totalPages: data.totalPages || 1
+    } : undefined,
     loading: isLoading,
     error,
     mutate,
@@ -38,9 +61,15 @@ export function useMembers(params?: QueryParams) {
 
 // 获取单个会员
 export function useMember(id: string | null) {
-  const { data, error, mutate, isLoading } = useSWR<Member>(
+  const { data, error, isLoading, mutate } = useSWR<Member>(
     id ? `/members/${id}` : null,
-    id ? () => membersApi.getMember(id) : null
+    id ? fetcher : null,
+    {
+      revalidateOnMount: true,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+      dedupingInterval: 2000,
+    }
   )
 
   return {
@@ -74,7 +103,6 @@ export function useMemberActions() {
   const deleteMember = async (id: string) => {
     try {
       await membersApi.deleteMember(id)
-      return true
     } catch (error) {
       throw error
     }

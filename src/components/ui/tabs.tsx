@@ -1,7 +1,8 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from 'react'
+
+import { cn } from '@/lib/utils'
 
 interface TabsProps {
   defaultValue?: string
@@ -31,16 +32,21 @@ interface TabsContentProps {
 const TabsContext = React.createContext<{
   value: string
   onValueChange: (value: string) => void
-}>({ value: "", onValueChange: () => {} })
+}>({ value: '', onValueChange: () => {} })
 
 const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
-  ({ defaultValue = "", value, onValueChange, className, children, ...props }, ref) => {
+  (
+    { defaultValue = '', value, onValueChange, className, children, ...props },
+    ref
+  ) => {
     const [internalValue, setInternalValue] = React.useState(defaultValue)
     const currentValue = value ?? internalValue
     const handleValueChange = onValueChange ?? setInternalValue
 
     return (
-      <TabsContext.Provider value={{ value: currentValue, onValueChange: handleValueChange }}>
+      <TabsContext.Provider
+        value={{ value: currentValue, onValueChange: handleValueChange }}
+      >
         <div ref={ref} className={className} {...props}>
           {children}
         </div>
@@ -48,14 +54,14 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
     )
   }
 )
-Tabs.displayName = "Tabs"
+Tabs.displayName = 'Tabs'
 
 const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
   ({ className, children, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        "inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500",
+        'inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500',
         className
       )}
       {...props}
@@ -64,7 +70,7 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
     </div>
   )
 )
-TabsList.displayName = "TabsList"
+TabsList.displayName = 'TabsList'
 
 const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
   ({ value, className, children, ...props }, ref) => {
@@ -75,10 +81,10 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
           isActive
-            ? "bg-white text-gray-900 shadow-sm"
-            : "text-gray-600 hover:text-gray-900",
+            ? 'bg-white text-gray-900 shadow-sm'
+            : 'text-gray-600 hover:text-gray-900',
           className
         )}
         onClick={() => onValueChange(value)}
@@ -89,12 +95,12 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
     )
   }
 )
-TabsTrigger.displayName = "TabsTrigger"
+TabsTrigger.displayName = 'TabsTrigger'
 
 const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
   ({ value, className, children, ...props }, ref) => {
     const { value: currentValue } = React.useContext(TabsContext)
-    
+
     if (currentValue !== value) {
       return null
     }
@@ -103,7 +109,7 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
       <div
         ref={ref}
         className={cn(
-          "mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+          'mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
           className
         )}
         {...props}
@@ -113,6 +119,6 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
     )
   }
 )
-TabsContent.displayName = "TabsContent"
+TabsContent.displayName = 'TabsContent'
 
 export { Tabs, TabsList, TabsTrigger, TabsContent }

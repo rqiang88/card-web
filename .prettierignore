@@ -1,0 +1,22 @@
+node_modules
+.next
+.vercel
+dist
+build
+*.log
+.env*
+.git
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Generated files
+lib/generated/
+hooks/model/
+prisma/schema.prisma
+app/api/openapi/openapi.json
+
+# Config files
+next.config.ts
+tailwind.config.js
+postcss.config.js

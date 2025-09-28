@@ -1,39 +1,51 @@
-import * as React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { DataPagination } from "@/components/ui/data-pagination";
-import { Search, Wallet, Clock, Package, Calendar, TrendingUp, Trash2 } from "lucide-react";
-import { usePagination } from "@/hooks/use-pagination";
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
+import {
+  Calendar,
+  Clock,
+  Eye,
+  Package,
+  Search,
+  Trash2,
+  TrendingUp,
+  Wallet,
+} from 'lucide-react'
+
+import * as React from 'react'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { DataPagination } from '@/components/ui/data-pagination'
+import { Input } from '@/components/ui/input'
+import { usePagination } from '@/hooks/use-pagination'
 
 interface RechargeRecord {
-  id: string;
-  rechargeAmount: number;
-  packageName?: string;
-  remainingTimes?: number;
-  totalTimes?: number;
-  expiryDate?: string;
-  rechargeAt: string;
+  id: string
+  rechargeAmount: number
+  packageName?: string
+  remainingTimes?: number
+  totalTimes?: number
+  expiryDate?: string
+  rechargeAt: string
   status: {
-    label: string;
-    color: string;
-  };
+    label: string
+    color: string
+  }
   paymentMethod?: {
-    label: string;
-    icon: string;
-    color: string;
-  };
-  type: 'package' | 'balance';
+    label: string
+    icon: string
+    color: string
+  }
+  type: 'package' | 'balance'
 }
 
 interface RechargeRecordListProps {
-  records: RechargeRecord[];
-  searchValue: string;
-  onSearchChange: (value: string) => void;
-  onDelete?: (id: string) => void;
-  className?: string;
+  records: RechargeRecord[]
+  searchValue: string
+  onSearchChange: (value: string) => void
+  onDelete?: (id: string) => void
+  onViewDetail?: (id: string) => void
+  className?: string
 }
 
 export function RechargeRecordList({
@@ -41,18 +53,22 @@ export function RechargeRecordList({
   searchValue,
   onSearchChange,
   onDelete,
-  className = ""
+  onViewDetail,
+  className = '',
 }: RechargeRecordListProps) {
   // 过滤记录
   const filteredRecords = React.useMemo(() => {
-    if (!searchValue) return records;
+    if (!searchValue) return records
     return records.filter(
       (record) =>
-        (record.packageName && record.packageName.toLowerCase().includes(searchValue.toLowerCase())) ||
+        (record.packageName &&
+          record.packageName
+            .toLowerCase()
+            .includes(searchValue.toLowerCase())) ||
         record.rechargeAmount.toString().includes(searchValue) ||
         record.status.label.toLowerCase().includes(searchValue.toLowerCase())
-    );
-  }, [records, searchValue]);
+    )
+  }, [records, searchValue])
 
   // 分页逻辑
   const {
@@ -63,7 +79,7 @@ export function RechargeRecordList({
   } = usePagination(filteredRecords, {
     totalItems: filteredRecords.length,
     itemsPerPage: 10,
-  });
+  })
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -86,15 +102,20 @@ export function RechargeRecordList({
               <Wallet className="w-8 h-8 text-emerald-500" />
             </div>
             <p className="text-muted-foreground text-lg">
-              {searchValue ? "未找到匹配的充值记录" : "暂无充值记录"}
+              {searchValue ? '未找到匹配的充值记录' : '暂无充值记录'}
             </p>
             {!searchValue && (
-              <p className="text-sm text-muted-foreground mt-1">该会员暂无充值记录</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                该会员暂无充值记录
+              </p>
             )}
           </div>
         ) : (
           paginatedRecords.map((record) => (
-            <Card key={record.id} className="hover-lift border-l-4 border-l-emerald-400 bg-background">
+            <Card
+              key={record.id}
+              className="hover-lift border-l-4 border-l-emerald-400 bg-background"
+            >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   {/* 左侧信息 */}
@@ -107,31 +128,38 @@ export function RechargeRecordList({
                       {/* 套餐名称和类型 */}
                       <div className="flex items-center space-x-3">
                         <h3 className="font-semibold text-foreground text-lg">
-                          {record.type === "package" ? (record.packageName || "套餐充值") : "余额充值"}
+                          {record.type === 'package'
+                            ? record.packageName || '套餐充值'
+                            : '余额充值'}
                         </h3>
                         <Badge className={record.status.color}>
                           {record.status.label}
                         </Badge>
                         {record.paymentMethod && (
                           <Badge className={record.paymentMethod.color}>
-                            {record.paymentMethod.icon} {record.paymentMethod.label}
+                            {record.paymentMethod.icon}{' '}
+                            {record.paymentMethod.label}
                           </Badge>
                         )}
                       </div>
 
                       {/* 使用次数信息 - 仅套餐充值显示 */}
-                      {record.type === "package" && record.totalTimes && (
+                      {record.type === 'package' && record.totalTimes && (
                         <div className="flex items-center space-x-6">
                           <div className="flex items-center space-x-2">
                             <TrendingUp className="w-4 h-4 text-blue-500" />
-                            <span className="text-sm text-muted-foreground">剩余次数:</span>
+                            <span className="text-sm text-muted-foreground">
+                              剩余次数:
+                            </span>
                             <span className="font-medium text-blue-600">
                               {record.remainingTimes || 0}
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <Package className="w-4 h-4 text-slate-500" />
-                            <span className="text-sm text-muted-foreground">总次数:</span>
+                            <span className="text-sm text-muted-foreground">
+                              总次数:
+                            </span>
                             <span className="font-medium text-slate-600">
                               {record.totalTimes}
                             </span>
@@ -143,15 +171,21 @@ export function RechargeRecordList({
                       <div className="flex items-center space-x-6">
                         <div className="flex items-center space-x-2">
                           <Clock className="w-4 h-4 text-slate-500" />
-                          <span className="text-sm text-muted-foreground">充值时间:</span>
+                          <span className="text-sm text-muted-foreground">
+                            充值时间:
+                          </span>
                           <span className="text-sm font-medium">
-                            {dayjs(record.rechargeAt).format('YYYY-MM-DD HH:mm:ss')}
+                            {dayjs(record.rechargeAt).format(
+                              'YYYY-MM-DD HH:mm:ss'
+                            )}
                           </span>
                         </div>
-                        {record.type === "package" && record.expiryDate && (
+                        {record.type === 'package' && record.expiryDate && (
                           <div className="flex items-center space-x-2">
                             <Calendar className="w-4 h-4 text-orange-500" />
-                            <span className="text-sm text-muted-foreground">到期日期:</span>
+                            <span className="text-sm text-muted-foreground">
+                              到期日期:
+                            </span>
                             <span className="text-sm font-medium text-orange-600">
                               {dayjs(record.expiryDate).format('YYYY-MM-DD')}
                             </span>
@@ -169,17 +203,30 @@ export function RechargeRecordList({
                     <div className="text-xs text-muted-foreground">
                       充值金额
                     </div>
-                    {onDelete && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onDelete(record.id)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300"
-                      >
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        删除
-                      </Button>
-                    )}
+                    <div className="flex space-x-2">
+                      {onViewDetail && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onViewDetail(record.id)}
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 hover:border-blue-300"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          详情
+                        </Button>
+                      )}
+                      {onDelete && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onDelete(record.id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300"
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          删除
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -199,5 +246,5 @@ export function RechargeRecordList({
         </div>
       )}
     </div>
-  );
+  )
 }

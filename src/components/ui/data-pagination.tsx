@@ -1,4 +1,5 @@
-import * as React from "react"
+import * as React from 'react'
+
 import {
   Pagination,
   PaginationContent,
@@ -7,7 +8,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from '@/components/ui/pagination'
 
 interface DataPaginationProps {
   currentPage: number
@@ -35,7 +36,7 @@ export function DataPagination({
 
     const halfVisible = Math.floor(maxVisible / 2)
     let start = Math.max(1, currentPage - halfVisible)
-    let end = Math.min(totalPages, start + maxVisible - 1)
+    const end = Math.min(totalPages, start + maxVisible - 1)
 
     if (end - start + 1 < maxVisible) {
       start = Math.max(1, end - maxVisible + 1)
@@ -61,7 +62,7 @@ export function DataPagination({
                 onPageChange(currentPage - 1)
               }
             }}
-            className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+            className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
           />
         </PaginationItem>
 
@@ -133,7 +134,9 @@ export function DataPagination({
                 onPageChange(currentPage + 1)
               }
             }}
-            className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+            className={
+              currentPage >= totalPages ? 'pointer-events-none opacity-50' : ''
+            }
           />
         </PaginationItem>
       </PaginationContent>

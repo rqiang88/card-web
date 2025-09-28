@@ -1,8 +1,13 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Search, User, X } from 'lucide-react'
+
+import * as React from 'react'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { DataPagination } from '@/components/ui/data-pagination'
 import {
   Dialog,
   DialogContent,
@@ -10,40 +15,37 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { DataPagination } from "@/components/ui/data-pagination";
-import { Search, User, X } from "lucide-react";
-import { useMembers } from "@/hooks/use-members";
-import { usePagination } from "@/hooks/use-pagination";
-import type { Member } from "@/types";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { useMembers } from '@/hooks/use-members'
+import { usePagination } from '@/hooks/use-pagination'
+import type { Member } from '@/types'
 
 interface MemberSelectorProps {
-  value?: string;
-  onValueChange: (memberId: string, member: Member) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  selectedMember?: Member | null;
+  value?: string
+  onValueChange: (memberId: string, member: Member) => void
+  placeholder?: string
+  disabled?: boolean
+  selectedMember?: Member | null
 }
 
 export function MemberSelector({
   value,
   onValueChange,
-  placeholder = "选择会员",
+  placeholder = '选择会员',
   disabled = false,
   selectedMember,
 }: MemberSelectorProps) {
-  const [open, setOpen] = React.useState(false);
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [currentPage, setCurrentPage] = React.useState(1);
+  const [open, setOpen] = React.useState(false)
+  const [searchTerm, setSearchTerm] = React.useState('')
+  const [currentPage, setCurrentPage] = React.useState(1)
 
   // 获取会员数据
   const { members, loading, error } = useMembers({
     search: searchTerm,
     page: currentPage,
     limit: 10,
-  });
+  })
 
   // 分页逻辑
   const {
@@ -53,26 +55,26 @@ export function MemberSelector({
   } = usePagination(members, {
     totalItems: members.length,
     itemsPerPage: 10,
-  });
+  })
 
   const handleSelectMember = (member: Member) => {
-    onValueChange(String(member.id), member);
-    setOpen(false);
-  };
+    onValueChange(String(member.id), member)
+    setOpen(false)
+  }
 
   const handleClearSelection = () => {
-    onValueChange("", {} as Member);
-  };
+    onValueChange('', {} as Member)
+  }
 
   const getMemberLevelBadge = (level: string) => {
     const levelConfig = {
-      normal: { label: "普通", color: "bg-gray-100 text-gray-800" },
-      vip: { label: "VIP", color: "bg-yellow-100 text-yellow-800" },
-      diamond: { label: "钻石", color: "bg-purple-100 text-purple-800" },
-    }[level] || { label: level, color: "bg-gray-100 text-gray-800" };
+      normal: { label: '普通', color: 'bg-gray-100 text-gray-800' },
+      vip: { label: 'VIP', color: 'bg-yellow-100 text-yellow-800' },
+      diamond: { label: '钻石', color: 'bg-purple-100 text-purple-800' },
+    }[level] || { label: level, color: 'bg-gray-100 text-gray-800' }
 
-    return <Badge className={levelConfig.color}>{levelConfig.label}</Badge>;
-  };
+    return <Badge className={levelConfig.color}>{levelConfig.label}</Badge>
+  }
 
   return (
     <div className="space-y-2">
@@ -130,8 +132,8 @@ export function MemberSelector({
                 placeholder="搜索会员姓名或手机号..."
                 value={searchTerm}
                 onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
+                  setSearchTerm(e.target.value)
+                  setCurrentPage(1)
                 }}
                 className="pl-10"
               />
@@ -149,7 +151,7 @@ export function MemberSelector({
                 </div>
               ) : paginatedMembers.length === 0 ? (
                 <div className="flex items-center justify-center h-32 text-gray-500">
-                  {searchTerm ? "未找到匹配的会员" : "暂无会员数据"}
+                  {searchTerm ? '未找到匹配的会员' : '暂无会员数据'}
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -210,5 +212,5 @@ export function MemberSelector({
         </Dialog>
       )}
     </div>
-  );
+  )
 }

@@ -1,19 +1,58 @@
 import useSWR from 'swr'
+
+import { fetcher } from '@/components/providers/swr-provider'
 import { packagesApi } from '@/lib/api'
 import type { Package, PaginationResponse, QueryParams } from '@/types'
 
 // 获取套餐列表
 export function usePackages(params?: QueryParams) {
-  const queryString = params ? new URLSearchParams(params as any).toString() : ''
-  const { data, error, mutate, isLoading } = useSWR<PaginationResponse<Package>>(
-    `/packages${queryString ? `?${queryString}` : ''}`,
-    () => packagesApi.getPackages(params)
+  console.log('🚀 usePackages hook 被调用，参数:', params)
+
+  const queryString = params
+    ? new URLSearchParams(params as any).toString()
+    : ''
+  const swrKey = queryString ? `/packages?${queryString}` : '/packages'
+
+  console.log('🚀 usePackages SWR Key:', swrKey)
+
+  const { data, error, mutate, isLoading, isValidating } = useSWR<
+    PaginationResponse<Package>
+  >(
+    swrKey,
+    fetcher, // 添加缺失的fetcher参数
+    {
+      revalidateOnMount: true,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+      dedupingInterval: 2000, // 2秒内去重
+      refreshInterval: 0, // 不自动刷新
+      onSuccess: (data) => {
+        console.log('🚀 usePackages SWR onSuccess:', data)
+      },
+      onError: (error) => {
+        console.log('🚀 usePackages SWR onError:', error)
+      },
+    }
   )
+
+  console.log('🚀 usePackages SWR 状态:', {
+    data,
+    error,
+    isLoading,
+    isValidating,
+    packages: data?.items || [],
+    total: data?.total || 0,
+  })
 
   return {
     packages: data?.items || [],
-    total: data?.pagination?.total || 0,
-    pagination: data?.pagination,
+    total: data?.total || 0,
+    pagination: data ? {
+      total: data.total || 0,
+      page: data.page || 1,
+      limit: data.limit || 10,
+      totalPages: data.totalPages || 1
+    } : undefined,
     loading: isLoading,
     error,
     mutate,
@@ -22,9 +61,15 @@ export function usePackages(params?: QueryParams) {
 
 // 获取单个套餐
 export function usePackage(id: string | null) {
-  const { data, error, mutate, isLoading } = useSWR<Package>(
+  const { data, error, isLoading, mutate } = useSWR<Package>(
     id ? `/packages/${id}` : null,
-    id ? () => packagesApi.getPackage(id) : null
+    id ? fetcher : null,
+    {
+      revalidateOnMount: true,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+      dedupingInterval: 2000,
+    }
   )
 
   return {

@@ -1,10 +1,23 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import dayjs from 'dayjs'
+import { Eye, Plus, Search, Trash2, Wallet } from 'lucide-react'
+
+import * as React from 'react'
+
+import { useRouter } from 'next/navigation'
+
+import { RechargeForm } from '@/components/forms/recharge-form'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { DataPagination } from '@/components/ui/data-pagination'
 import {
   Dialog,
   DialogContent,
@@ -12,16 +25,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { PAYMENT_METHODS, RECHARGE_STATUS } from "@/lib/constants"
-import { Plus, Search, Trash2, Wallet, Eye } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { usePagination } from "@/hooks/use-pagination"
-import { DataPagination } from "@/components/ui/data-pagination"
-import { RechargeForm } from "@/components/forms/recharge-form"
-import { useRecharges, useRechargeActions } from "@/hooks/use-recharges"
-import type { RechargeFormData } from "@/types"
-import dayjs from "dayjs"
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { usePagination } from '@/hooks/use-pagination'
+import { useRechargeActions, useRecharges } from '@/hooks/use-recharges'
+import { useToast } from '@/hooks/use-toast'
+import { PAYMENT_METHODS, RECHARGE_STATUS } from '@/lib/constants'
+import type { RechargeFormData } from '@/types'
 
 // 立即设置token
 if (typeof window !== 'undefined') {
@@ -33,12 +43,12 @@ if (typeof window !== 'undefined') {
   }
 }
 
-
-
 export default function RechargePage() {
+  const router = useRouter()
   const { toast } = useToast()
   const [searchTerm, setSearchTerm] = React.useState('')
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = React.useState<string>('')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    React.useState<string>('')
   const [selectedStatus, setSelectedStatus] = React.useState<string>('')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
 
@@ -53,8 +63,6 @@ export default function RechargePage() {
       window.location.reload()
     }
   }, [])
-
-
 
   // 格式化时间为精确到分钟的格式
   // 格式化日期时间，使用dayjs
@@ -81,14 +89,18 @@ export default function RechargePage() {
     limit: 50, // 获取更多数据用于前端分页
   })
 
-
-
   const { createRecharge, deleteRecharge } = useRechargeActions()
 
   // 过滤充值记录 - 添加安全检查
-  const filteredRecharges = (recharges || []).filter((recharge: any) =>
-    recharge.memberName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (recharge.packageName && recharge.packageName.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredRecharges = (recharges || []).filter(
+    (recharge: any) => {
+      const memberName = recharge.member?.name || recharge.memberName || ''
+      const packageName = recharge.package?.name || recharge.packageName || ''
+      return (
+        memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        packageName.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
   )
 
   // 分页逻辑
@@ -106,7 +118,7 @@ export default function RechargePage() {
 
   // 获取支付方式标签
   const getPaymentMethodBadge = (method: string) => {
-    const methodConfig = PAYMENT_METHODS.find(m => m.value === method)
+    const methodConfig = PAYMENT_METHODS.find((m) => m.value === method)
     if (!methodConfig) return null
 
     return (
@@ -119,7 +131,7 @@ export default function RechargePage() {
 
   // 获取状态标签
   const getStatusBadge = (status: string) => {
-    const statusConfig = RECHARGE_STATUS.find(s => s.value === status)
+    const statusConfig = RECHARGE_STATUS.find((s) => s.value === status)
     return statusConfig ? (
       <Badge className={statusConfig.color}>{statusConfig.label}</Badge>
     ) : null
@@ -133,15 +145,15 @@ export default function RechargePage() {
       mutate() // 刷新数据
 
       toast({
-        title: "创建成功",
-        description: "充值记录已成功创建",
+        title: '创建成功',
+        description: '充值记录已成功创建',
       })
     } catch (error: any) {
       toast({
-        title: "创建失败",
+        title: '创建失败',
         description:
-          error.response?.data?.message || "创建充值记录时发生错误，请重试",
-        variant: "destructive",
+          error.response?.data?.message || '创建充值记录时发生错误，请重试',
+        variant: 'destructive',
       })
     }
   }
@@ -149,7 +161,7 @@ export default function RechargePage() {
   // 删除充值记录
 
   const handleDeleteRecharge = async (rechargeId: string) => {
-    if (!confirm("确定要删除这条充值记录吗？此操作不可恢复。")) {
+    if (!confirm('确定要删除这条充值记录吗？此操作不可恢复。')) {
       return
     }
 
@@ -158,23 +170,31 @@ export default function RechargePage() {
       mutate() // 刷新数据
 
       toast({
-        title: "删除成功",
-        description: "充值记录已成功删除",
+        title: '删除成功',
+        description: '充值记录已成功删除',
       })
     } catch (error: any) {
       toast({
-        title: "删除失败",
+        title: '删除失败',
         description:
-          error.response?.data?.message || "删除充值记录时发生错误，请重试",
-        variant: "destructive",
+          error.response?.data?.message || '删除充值记录时发生错误，请重试',
+        variant: 'destructive',
       })
     }
   }
 
   // 计算统计数据 - 添加安全检查
-  const totalAmount = (filteredRecharges || []).reduce((sum: number, r: any) => sum + parseFloat(r.rechargeAmount || r.amount || '0'), 0)
-  const balanceRecharges = (filteredRecharges || []).filter((r: any) => r.type === 'balance')
-  const packageRecharges = (filteredRecharges || []).filter((r: any) => r.type === 'package')
+  const totalAmount = (filteredRecharges || []).reduce(
+    (sum: number, r: any) =>
+      sum + parseFloat(r.rechargeAmount || r.amount || '0'),
+    0
+  )
+  const balanceRecharges = (filteredRecharges || []).filter(
+    (r: any) => r.type === 'balance'
+  )
+  const packageRecharges = (filteredRecharges || []).filter(
+    (r: any) => r.type === 'package'
+  )
 
   return (
     <div className="space-y-6">
@@ -185,26 +205,24 @@ export default function RechargePage() {
           <p className="text-gray-600">管理会员的充值记录和套餐购买</p>
         </div>
         <div className="flex items-center space-x-4">
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-green-600 hover:bg-green-700">
-              <Plus className="mr-2 h-4 w-4" />
-              会员充值
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>会员充值</DialogTitle>
-              <DialogDescription>
-                为会员充值余额或购买套餐
-              </DialogDescription>
-            </DialogHeader>
-            <RechargeForm
-              onSubmit={handleCreateRecharge}
-              loading={false}
-            />
-          </DialogContent>
-        </Dialog>
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
+            <DialogTrigger asChild>
+              <Button className="bg-green-600 hover:bg-green-700">
+                <Plus className="mr-2 h-4 w-4" />
+                会员充值
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>会员充值</DialogTitle>
+                <DialogDescription>为会员充值余额或购买套餐</DialogDescription>
+              </DialogHeader>
+              <RechargeForm onSubmit={handleCreateRecharge} loading={false} />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -215,7 +233,9 @@ export default function RechargePage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">今日充值</p>
-                <p className="text-2xl font-bold text-gray-900">¥{totalAmount.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ¥{totalAmount.toFixed(2)}
+                </p>
                 <p className="text-xs text-green-600">+18.5% 较昨日</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -230,7 +250,9 @@ export default function RechargePage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">充值笔数</p>
-                <p className="text-2xl font-bold text-gray-900">{filteredRecharges.length}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {filteredRecharges.length}
+                </p>
                 <p className="text-xs text-blue-600">今日交易</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -245,7 +267,9 @@ export default function RechargePage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">余额充值</p>
-                <p className="text-2xl font-bold text-gray-900">{balanceRecharges.length}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {balanceRecharges.length}
+                </p>
                 <p className="text-xs text-purple-600">余额类型</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -260,7 +284,9 @@ export default function RechargePage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">套餐充值</p>
-                <p className="text-2xl font-bold text-gray-900">{packageRecharges.length}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {packageRecharges.length}
+                </p>
                 <p className="text-xs text-orange-600">套餐类型</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -298,41 +324,49 @@ export default function RechargePage() {
           <div className="space-y-4">
             {(paginatedRecharges || []).map((recharge) => {
               // 获取会员信息
-              const memberName = recharge.member?.name || recharge.memberName || '未知会员'
-              const memberPhone = recharge.member?.phone || recharge.memberPhone || '未知电话'
-              const memberGender = recharge.member?.gender || recharge.memberGender || 'unknown'
+              const memberName =
+                recharge.member?.name || recharge.memberName || '未知会员'
+              const memberPhone =
+                recharge.member?.phone || recharge.memberPhone || '未知电话'
+              const memberGender =
+                recharge.member?.gender || recharge.memberGender || 'unknown'
 
               // 性别显示信息
               const getGenderDisplay = (gender: string) => {
                 switch (gender) {
-                  case 'male': return { icon: '♂', text: '男', color: 'bg-blue-100 text-blue-700' }
-                  case 'female': return { icon: '♀', text: '女', color: 'bg-pink-100 text-pink-700' }
-                  default: return { icon: '?', text: '未知', color: 'bg-gray-100 text-gray-600' }
+                  case 'male':
+                    return {
+                      icon: '♂',
+                      text: '男',
+                      color: 'bg-blue-100 text-blue-700',
+                    }
+                  case 'female':
+                    return {
+                      icon: '♀',
+                      text: '女',
+                      color: 'bg-pink-100 text-pink-700',
+                    }
+                  default:
+                    return {
+                      icon: '?',
+                      text: '未知',
+                      color: 'bg-gray-100 text-gray-600',
+                    }
                 }
               }
-              
+
               const genderInfo = getGenderDisplay(memberGender)
 
               // 查看充值详情
               const handleViewRechargeDetails = (recharge: any) => {
-                const memberName = recharge.member?.name || recharge.memberName || '未知会员'
-                const memberPhone = recharge.member?.phone || recharge.memberPhone || '未知电话'
-                const amount = parseFloat(recharge.rechargeAmount || recharge.amount || '0')
-                const type = recharge.type === 'balance' ? '余额充值' : '套餐充值'
-                const packageName = recharge.packageName || '无'
-                const status = recharge.status || recharge.state || '未知'
-                const rechargeTime = formatDateTime(recharge.rechargeAt || recharge.createdAt)
-                const endDate = recharge.endDate ? formatDate(recharge.endDate) : '无'
-                
-                toast({
-                  title: "充值记录详情",
-                  description: `会员：${memberName} (${memberPhone})\n类型：${type}\n套餐：${packageName}\n金额：¥${amount.toLocaleString()}\n状态：${status}\n充值时间：${rechargeTime}\n到期时间：${endDate}`,
-                  duration: 8000,
-                })
+                router.push(`/dashboard/recharges/${recharge.id}`)
               }
 
               return (
-                <div key={recharge.id} className="bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:border-blue-300 hover:from-blue-50 hover:to-white">
+                <div
+                  key={recharge.id}
+                  className="bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:border-blue-300 hover:from-blue-50 hover:to-white"
+                >
                   <div className="flex items-start justify-between">
                     {/* 左侧：会员信息 */}
                     <div className="flex items-center space-x-4">
@@ -343,13 +377,19 @@ export default function RechargePage() {
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center space-x-3">
-                          <h3 className="font-bold text-gray-900 text-xl truncate max-w-[200px]">{memberName}</h3>
-                          <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${genderInfo.color}`}>
+                          <h3 className="font-bold text-gray-900 text-xl truncate max-w-[200px]">
+                            {memberName}
+                          </h3>
+                          <div
+                            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${genderInfo.color}`}
+                          >
                             <span className="mr-1.5">{genderInfo.icon}</span>
                             <span>{genderInfo.text}</span>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 font-medium">{memberPhone}</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          {memberPhone}
+                        </p>
                       </div>
                     </div>
 
@@ -361,7 +401,9 @@ export default function RechargePage() {
                           {/* 充值类型 */}
                           <div className="space-y-2">
                             <div className="text-sm font-bold text-gray-900">
-                              {recharge.type === 'balance' ? '余额充值' : '套餐充值'}
+                              {recharge.type === 'balance'
+                                ? '余额充值'
+                                : '套餐充值'}
                             </div>
                             {recharge.type !== 'balance' && (
                               <div className="text-xs text-gray-600 max-w-[80px] truncate mx-auto bg-gray-100 px-2 py-1 rounded">
@@ -375,30 +417,44 @@ export default function RechargePage() {
                             <div className="text-2xl font-bold text-green-600">
                               {formatAmount(recharge)}
                             </div>
-                            <div className="text-xs text-gray-500 font-medium">充值金额</div>
+                            <div className="text-xs text-gray-500 font-medium">
+                              充值金额
+                            </div>
                           </div>
 
                           {/* 状态 */}
                           <div className="space-y-2">
-                            {getStatusBadge(recharge.status || recharge.state)}
-                            <div className="text-xs text-gray-500 font-medium">状态</div>
+                            {getStatusBadge(recharge.state)}
+                            <div className="text-xs text-gray-500 font-medium">
+                              状态
+                            </div>
                           </div>
 
                           {/* 剩余 */}
                           <div className="space-y-2">
                             <div className="text-sm font-bold text-gray-900">
-                              {recharge.type === 'package' && recharge.remainingTimes !== undefined ? (
+                              {recharge.type === 'package' &&
+                              recharge.remainingTimes !== undefined ? (
                                 <div className="space-y-1">
-                                  <div className="text-blue-600">{recharge.remainingTimes}</div>
-                                  <div className="text-xs text-gray-500">/ {recharge.totalTimes} 次</div>
+                                  <div className="text-blue-600">
+                                    {recharge.remainingTimes}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    / {recharge.totalTimes} 次
+                                  </div>
                                 </div>
-                              ) : recharge.remainingAmount !== undefined && recharge.remainingAmount > 0 ? (
-                                <span className="text-blue-600">¥{recharge.remainingAmount.toLocaleString()}</span>
+                              ) : recharge.remainingAmount !== undefined &&
+                                recharge.remainingAmount > 0 ? (
+                                <span className="text-blue-600">
+                                  ¥{recharge.remainingAmount.toLocaleString()}
+                                </span>
                               ) : (
                                 <span className="text-gray-400">-</span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-500 font-medium">剩余</div>
+                            <div className="text-xs text-gray-500 font-medium">
+                              剩余
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -433,17 +489,23 @@ export default function RechargePage() {
                       {/* 充值时间 */}
                       <div className="flex items-center space-x-3">
                         <div className="w-3 h-3 bg-blue-500 rounded-full shadow-sm"></div>
-                        <span className="text-sm text-gray-600 font-medium">充值时间：</span>
+                        <span className="text-sm text-gray-600 font-medium">
+                          充值时间：
+                        </span>
                         <span className="text-sm font-bold text-gray-900">
-                          {formatDateTime(recharge.rechargeAt || recharge.createdAt)}
+                          {formatDateTime(
+                            recharge.rechargeAt || recharge.createdAt
+                          )}
                         </span>
                       </div>
-                      
+
                       {/* 到期时间 */}
                       {recharge.endDate && (
                         <div className="flex items-center space-x-3">
                           <div className="w-3 h-3 bg-orange-500 rounded-full shadow-sm"></div>
-                          <span className="text-sm text-gray-600 font-medium">到期时间：</span>
+                          <span className="text-sm text-gray-600 font-medium">
+                            到期时间：
+                          </span>
                           <span className="text-sm font-bold text-orange-600">
                             {formatDate(recharge.endDate)}
                           </span>
@@ -486,7 +548,9 @@ export default function RechargePage() {
         <Card>
           <CardContent className="py-12 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">加载中...</h3>
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              加载中...
+            </h3>
             <p className="mt-2 text-gray-500">正在获取充值记录</p>
           </CardContent>
         </Card>
@@ -499,13 +563,9 @@ export default function RechargePage() {
             <div className="mx-auto h-12 w-12 text-red-400">❌</div>
             <h3 className="mt-4 text-lg font-medium text-gray-900">加载失败</h3>
             <p className="mt-2 text-gray-500">
-              {error.message || "获取充值记录时发生错误"}
+              {error.message || '获取充值记录时发生错误'}
             </p>
-            <Button 
-              onClick={() => mutate()} 
-              className="mt-4"
-              variant="outline"
-            >
+            <Button onClick={() => mutate()} className="mt-4" variant="outline">
               重试
             </Button>
           </CardContent>
@@ -517,9 +577,11 @@ export default function RechargePage() {
         <Card>
           <CardContent className="py-12 text-center">
             <Wallet className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-4 text-lg font-medium text-gray-900">暂无充值记录</h3>
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              暂无充值记录
+            </h3>
             <p className="mt-2 text-gray-500">
-              {searchTerm ? "没有找到匹配的充值记录" : "还没有任何充值记录"}
+              {searchTerm ? '没有找到匹配的充值记录' : '还没有任何充值记录'}
             </p>
           </CardContent>
         </Card>

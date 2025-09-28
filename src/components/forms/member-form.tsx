@@ -1,10 +1,11 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { memberSchema, type MemberFormData } from "@/lib/validations"
-import { GENDER_OPTIONS, MEMBER_STATUS } from "@/lib/constants"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+
+import * as React from 'react'
+
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -12,17 +13,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { GENDER_OPTIONS, MEMBER_STATUS } from '@/lib/constants'
+import { type MemberFormData, memberSchema } from '@/lib/validations'
 
 interface MemberFormProps {
   onSubmit: (data: MemberFormData) => void
@@ -35,18 +37,18 @@ export function MemberForm({
   onSubmit,
   defaultValues,
   loading = false,
-  submitText = "保存",
+  submitText = '保存',
 }: MemberFormProps) {
   const form = useForm<MemberFormData>({
     resolver: zodResolver(memberSchema),
     defaultValues: {
-      name: "",
-      phone: "",
-      gender: "male",
-      birthday: "",
-      registerAt: "",
-      state: "active",
-      remark: "",
+      name: '',
+      phone: '',
+      gender: 'male',
+      birthday: '',
+      registerAt: '',
+      state: 'active',
+      remark: '',
       ...defaultValues,
     },
     mode: 'onSubmit',
@@ -67,7 +69,7 @@ export function MemberForm({
                   <Input
                     placeholder="请输入会员姓名"
                     {...field}
-                    value={field.value || ""}
+                    value={field.value || ''}
                   />
                 </FormControl>
                 <FormMessage />
@@ -81,7 +83,10 @@ export function MemberForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>性别 *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="请选择性别" />
@@ -113,7 +118,7 @@ export function MemberForm({
                   <Input
                     placeholder="请输入手机号码"
                     {...field}
-                    value={field.value || ""}
+                    value={field.value || ''}
                   />
                 </FormControl>
                 <FormMessage />
@@ -127,7 +132,10 @@ export function MemberForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>状态 *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="请选择状态" />
@@ -156,13 +164,13 @@ export function MemberForm({
               <FormItem>
                 <FormLabel>生日</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="date" 
-                    {...field} 
-                    value={field.value || ""} 
+                  <Input
+                    type="date"
+                    {...field}
+                    value={field.value || ''}
                     onChange={(e) => {
-                      const value = e.target.value;
-                      field.onChange(value === "" ? "" : value);
+                      const value = e.target.value
+                      field.onChange(value === '' ? '' : value)
                     }}
                   />
                 </FormControl>
@@ -178,13 +186,13 @@ export function MemberForm({
               <FormItem>
                 <FormLabel>登记时间</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="datetime-local" 
-                    {...field} 
-                    value={field.value || ""} 
+                  <Input
+                    type="datetime-local"
+                    {...field}
+                    value={field.value || ''}
                     onChange={(e) => {
-                      const value = e.target.value;
-                      field.onChange(value === "" ? "" : value);
+                      const value = e.target.value
+                      field.onChange(value === '' ? '' : value)
                     }}
                   />
                 </FormControl>
@@ -202,11 +210,11 @@ export function MemberForm({
             <FormItem>
               <FormLabel>备注</FormLabel>
               <FormControl>
-                <Textarea 
-                  placeholder="请输入备注信息（可选）" 
+                <Textarea
+                  placeholder="请输入备注信息（可选）"
                   className="min-h-[80px]"
-                  {...field} 
-                  value={field.value || ""} 
+                  {...field}
+                  value={field.value || ''}
                 />
               </FormControl>
               <FormMessage />
@@ -216,7 +224,7 @@ export function MemberForm({
 
         <div className="flex justify-end space-x-4">
           <Button type="submit" disabled={loading}>
-            {loading ? "保存中..." : submitText}
+            {loading ? '保存中...' : submitText}
           </Button>
         </div>
       </form>

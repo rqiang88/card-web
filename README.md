@@ -92,11 +92,13 @@ frontend/
 ## 🎯 页面说明
 
 ### 登录页面 (`/auth/login`)
+
 - 用户名/密码登录
 - 测试账号：admin / 123456
 - 响应式设计，支持移动端
 
 ### 仪表板 (`/dashboard`)
+
 - 营收统计卡片
 - 会员数据概览
 - 充值统计信息
@@ -104,24 +106,28 @@ frontend/
 - 热门套餐排行
 
 ### 会员管理 (`/dashboard/members`)
+
 - 会员列表展示
 - 新增/编辑会员
 - 会员信息搜索
 - 会员等级管理
 
 ### 套餐管理 (`/dashboard/packages`)
+
 - 套餐列表展示
 - 套餐分类管理
 - 价格和有效期设置
 - 套餐状态控制
 
-### 消费管理 (`/dashboard/consumption`)
+### 消费管理 (`/dashboard/consumptions`)
+
 - 消费记录列表
 - 支付方式统计
 - 消费数据分析
 - 交易明细查看
 
-### 充值管理 (`/dashboard/recharge`)
+### 充值管理 (`/dashboard/recharges`)
+
 - 充值记录管理
 - 余额和套餐充值
 - 充值统计分析
@@ -153,7 +159,7 @@ export const useExampleStore = create<ExampleState>((set) => ({
   // state
   data: [],
   loading: false,
-  
+
   // actions
   setData: (data) => set({ data }),
   setLoading: (loading) => set({ loading }),
@@ -168,7 +174,7 @@ export const useExampleStore = create<ExampleState>((set) => ({
 // 自定义 Hook
 export function useExample() {
   const { data, error, mutate } = useSWR('/api/example', fetcher)
-  
+
   return {
     data,
     loading: !error && !data,

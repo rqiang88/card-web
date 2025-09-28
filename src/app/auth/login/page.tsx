@@ -1,16 +1,32 @@
-"use client"
+'use client'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Eye, EyeOff, LogIn, Shield, Sparkles, Users } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 
 import { useState } from 'react'
+
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { loginSchema, type LoginFormData } from '@/lib/validations'
+
 import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
-import { Eye, EyeOff, LogIn, Shield, Users, Sparkles } from 'lucide-react'
+import { type LoginFormData, loginSchema } from '@/lib/validations'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -30,7 +46,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       // 模拟登录API调用
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
       // 模拟成功登录
       if (data.username === 'admin' && data.password === '123456') {
@@ -79,7 +95,9 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">安全可靠</h3>
-                  <p className="text-blue-100 text-sm">企业级安全保障，数据加密存储</p>
+                  <p className="text-blue-100 text-sm">
+                    企业级安全保障，数据加密存储
+                  </p>
                 </div>
               </div>
 
@@ -89,7 +107,9 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">功能丰富</h3>
-                  <p className="text-blue-100 text-sm">会员管理、套餐销售、数据分析一体化</p>
+                  <p className="text-blue-100 text-sm">
+                    会员管理、套餐销售、数据分析一体化
+                  </p>
                 </div>
               </div>
 
@@ -99,7 +119,9 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">易于使用</h3>
-                  <p className="text-blue-100 text-sm">直观的界面设计，快速上手操作</p>
+                  <p className="text-blue-100 text-sm">
+                    直观的界面设计，快速上手操作
+                  </p>
                 </div>
               </div>
             </div>
@@ -137,18 +159,23 @@ export default function LoginPage() {
 
               <CardContent className="space-y-6">
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-5"
+                  >
                     <FormField
                       control={form.control}
                       name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 font-medium">用户名</FormLabel>
+                          <FormLabel className="text-gray-700 font-medium">
+                            用户名
+                          </FormLabel>
                           <FormControl>
-                            <Input 
-                              placeholder="请输入用户名" 
+                            <Input
+                              placeholder="请输入用户名"
                               className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                              {...field} 
+                              {...field}
                               disabled={loading}
                             />
                           </FormControl>
@@ -162,7 +189,9 @@ export default function LoginPage() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 font-medium">密码</FormLabel>
+                          <FormLabel className="text-gray-700 font-medium">
+                            密码
+                          </FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Input
@@ -195,7 +224,7 @@ export default function LoginPage() {
 
                     <Button
                       type="submit"
-                      className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200" 
+                      className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200"
                       disabled={loading}
                     >
                       {loading ? (
@@ -222,11 +251,15 @@ export default function LoginPage() {
                   <div className="space-y-2 text-sm text-gray-600">
                     <div className="flex justify-between items-center">
                       <span>管理员账号：</span>
-                      <code className="bg-white px-2 py-1 rounded border text-xs">admin / 123456</code>
+                      <code className="bg-white px-2 py-1 rounded border text-xs">
+                        admin / 123456
+                      </code>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>操作员账号：</span>
-                      <code className="bg-white px-2 py-1 rounded border text-xs">operator / 123456</code>
+                      <code className="bg-white px-2 py-1 rounded border text-xs">
+                        operator / 123456
+                      </code>
                     </div>
                   </div>
                 </div>

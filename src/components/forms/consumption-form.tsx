@@ -1,9 +1,11 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button } from "@/components/ui/button"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+
+import { useEffect, useState } from 'react'
+
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -11,20 +13,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { MemberSelector } from "@/components/ui/member-selector"
-import { RechargeSelector } from "@/components/ui/recharge-selector"
-import { consumptionSchema, type ConsumptionFormData } from "@/lib/validations"
-import { consumptionApi } from "@/lib/api"
-import { useToast } from "@/hooks/use-toast"
-import type { Member, Recharge } from "@/types"
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { MemberSelector } from '@/components/ui/member-selector'
+import { RechargeSelector } from '@/components/ui/recharge-selector'
+import { Textarea } from '@/components/ui/textarea'
+import { useToast } from '@/hooks/use-toast'
+import { consumptionApi } from '@/lib/api'
+import { type ConsumptionFormData, consumptionSchema } from '@/lib/validations'
+import type { Member, Recharge } from '@/types'
 
 interface ConsumptionFormProps {
   onSuccess?: () => void
   onCancel?: () => void
   onSubmit?: (data: ConsumptionFormData) => Promise<void>
+  loading?: boolean
   initialData?: {
     memberId?: number
     memberName?: string
@@ -32,21 +35,28 @@ interface ConsumptionFormProps {
   }
 }
 
-export function ConsumptionForm({ onSuccess, onCancel, onSubmit, initialData }: ConsumptionFormProps) {
+export function ConsumptionForm({
+  onSuccess,
+  onCancel,
+  onSubmit,
+  initialData,
+}: ConsumptionFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedMember, setSelectedMember] = useState<Member | null>(null)
-  const [selectedRecharge, setSelectedRecharge] = useState<Recharge | null>(null)
+  const [selectedRecharge, setSelectedRecharge] = useState<Recharge | null>(
+    null
+  )
   const { toast } = useToast()
-// 获取当前本地时间的函数
-const getCurrentDateTime = () => {
-  const now = new Date()
-  // 获取本地时间偏移量（分钟）
-  const timezoneOffset = now.getTimezoneOffset()
-  // 创建本地时间的Date对象
-  const localTime = new Date(now.getTime() - (timezoneOffset * 60000))
-  // 返回本地时间的ISO字符串格式（去掉秒和毫秒部分）
-  return localTime.toISOString().slice(0, 16)
-}
+  // 获取当前本地时间的函数
+  const getCurrentDateTime = () => {
+    const now = new Date()
+    // 获取本地时间偏移量（分钟）
+    const timezoneOffset = now.getTimezoneOffset()
+    // 创建本地时间的Date对象
+    const localTime = new Date(now.getTime() - timezoneOffset * 60000)
+    // 返回本地时间的ISO字符串格式（去掉秒和毫秒部分）
+    return localTime.toISOString().slice(0, 16)
+  }
 
   const form = useForm<ConsumptionFormData>({
     resolver: zodResolver(consumptionSchema),
@@ -55,7 +65,7 @@ const getCurrentDateTime = () => {
       rechargeId: 0,
       packageId: 0,
       consumptionAt: getCurrentDateTime(), // 默认为当前时间
-      remark: initialData?.remark || "",
+      remark: initialData?.remark || '',
     },
   })
 
@@ -65,11 +75,12 @@ const getCurrentDateTime = () => {
       const member: Member = {
         id: String(initialData.memberId),
         name: initialData.memberName,
-        phone: "",
+        phone: '',
         email: undefined,
-        gender: "male",
+        gender: 'male',
+        level: 'normal',
         birthday: undefined,
-        state: "active",
+        state: 'active',
         balance: 0,
         points: 0,
         registerAt: new Date().toISOString(),
@@ -77,14 +88,14 @@ const getCurrentDateTime = () => {
         updatedAt: new Date().toISOString(),
       }
       setSelectedMember(member)
-      form.setValue("memberId", initialData.memberId)
+      form.setValue('memberId', initialData.memberId)
     }
   }, [initialData, form])
 
   const handleFormSubmit = async (data: ConsumptionFormData) => {
     try {
       setIsLoading(true)
-      
+
       // 如果有自定义的 onSubmit 处理函数，使用它
       if (onSubmit) {
         await onSubmit(data)
@@ -93,48 +104,50 @@ const getCurrentDateTime = () => {
           rechargeId: 0,
           packageId: 0,
           consumptionAt: getCurrentDateTime(), // 重置时使用最新的当前时间
-          remark: "",
+          remark: '',
         })
         setSelectedMember(null)
         setSelectedRecharge(null)
         onSuccess?.()
         return
       }
-      
+
       // 转换数据格式以匹配后端API
       const submitData = {
         memberId: data.memberId || undefined,
-        customerName: selectedMember?.name || data.memberName || "",
+        customerName: selectedMember?.name || data.memberName || '',
         rechargeId: data.rechargeId || undefined,
         packageId: data.packageId || undefined,
         remark: data.remark,
-        state: "completed",
-        consumptionAt: data.consumptionAt ? new Date(data.consumptionAt).toISOString() : new Date().toISOString(),
+        state: 'completed',
+        consumptionAt: data.consumptionAt
+          ? new Date(data.consumptionAt).toISOString()
+          : new Date().toISOString(),
       }
 
       await consumptionApi.createConsumption(submitData)
-      
+
       toast({
-        title: "成功",
-        description: "消费记录创建成功",
+        title: '成功',
+        description: '消费记录创建成功',
       })
-      
+
       form.reset({
         memberId: 0,
         rechargeId: 0,
         packageId: 0,
         consumptionAt: getCurrentDateTime(), // 重置时使用最新的当前时间
-        remark: "",
+        remark: '',
       })
       setSelectedMember(null)
       setSelectedRecharge(null)
       onSuccess?.()
     } catch (error) {
-      console.error("创建消费记录失败:", error)
+      console.error('创建消费记录失败:', error)
       toast({
-        title: "错误",
-        description: "创建消费记录失败",
-        variant: "destructive",
+        title: '错误',
+        description: '创建消费记录失败',
+        variant: 'destructive',
       })
     } finally {
       setIsLoading(false)
@@ -144,27 +157,30 @@ const getCurrentDateTime = () => {
   // 处理会员选择
   const handleMemberSelect = (memberId: string, member: Member) => {
     setSelectedMember(member)
-    form.setValue("memberId", parseInt(memberId))
+    form.setValue('memberId', parseInt(memberId))
     // 清空充值记录选择
     setSelectedRecharge(null)
-    form.setValue("rechargeId", 0)
+    form.setValue('rechargeId', 0)
   }
 
   // 处理充值记录选择
   const handleRechargeSelect = (rechargeId: string, recharge: Recharge) => {
     setSelectedRecharge(recharge)
-    form.setValue("rechargeId", parseInt(rechargeId))
+    form.setValue('rechargeId', parseInt(rechargeId))
     // 根据充值记录自动设置packageId
     if (recharge.packageId) {
-      form.setValue("packageId", parseInt(String(recharge.packageId)))
+      form.setValue('packageId', parseInt(String(recharge.packageId)))
     } else {
-      form.setValue("packageId", 0)
+      form.setValue('packageId', 0)
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(handleFormSubmit)}
+        className="space-y-6"
+      >
         <FormField
           control={form.control}
           name="memberId"
@@ -210,10 +226,7 @@ const getCurrentDateTime = () => {
             <FormItem>
               <FormLabel>消费时间</FormLabel>
               <FormControl>
-                <Input
-                  type="datetime-local"
-                  {...field}
-                />
+                <Input type="datetime-local" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -245,7 +258,7 @@ const getCurrentDateTime = () => {
             </Button>
           )}
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "创建中..." : "创建消费记录"}
+            {isLoading ? '创建中...' : '创建消费记录'}
           </Button>
         </div>
       </form>

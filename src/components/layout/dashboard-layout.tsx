@@ -1,24 +1,27 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { NAVIGATION_ITEMS } from "@/lib/constants"
 import {
   BarChart3,
-  Users,
-  Package,
   CreditCard,
-  Wallet,
-  Menu,
-  X,
   LogOut,
+  Menu,
+  Package,
   Settings,
   User,
-} from "lucide-react"
+  Users,
+  Wallet,
+  X,
+} from 'lucide-react'
+
+import * as React from 'react'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
+import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { NAVIGATION_ITEMS } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 
 const iconMap = {
   BarChart3,
@@ -49,8 +52,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* 侧边栏 */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-sidebar border-r border-sidebar-border shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          'fixed inset-y-0 left-0 z-50 w-64 bg-sidebar border-r border-sidebar-border shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         <div className="flex items-center justify-between h-16 px-6 border-b border-sidebar-border">
@@ -83,10 +86,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200",
+                      'flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200',
                       isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground border-r-3 border-sidebar-primary"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        ? 'bg-sidebar-accent text-sidebar-accent-foreground border-r-3 border-sidebar-primary'
+                        : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                     )}
                     onClick={() => setSidebarOpen(false)}
                   >
@@ -106,7 +109,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <User className="w-4 h-4 text-sidebar-primary-foreground" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-sidebar-foreground">管理员</p>
+              <p className="text-sm font-medium text-sidebar-foreground">
+                管理员
+              </p>
               <p className="text-xs text-muted-foreground">admin@example.com</p>
             </div>
             <button
@@ -137,7 +142,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <span>首页</span>
                 <span className="mx-2">/</span>
                 <span className="text-foreground">
-                  {NAVIGATION_ITEMS.find(item => item.href === pathname)?.title || '仪表板'}
+                  {NAVIGATION_ITEMS.find((item) => item.href === pathname)
+                    ?.title || '仪表板'}
                 </span>
               </nav>
             </div>
@@ -154,9 +160,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </header>
 
         {/* 页面内容 */}
-        <div className="flex-1 overflow-auto p-6">
-          {children}
-        </div>
+        <div className="flex-1 overflow-auto p-6">{children}</div>
       </main>
 
       {/* 移动端遮罩 */}
