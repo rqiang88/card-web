@@ -33,8 +33,8 @@ export function RevenueChart() {
         const response = await dashboardApi.getWeeklyRevenues()
 
         // 转换API数据格式为图表所需格式
-        // API返回的数据结构: response.data.records (实际数据数组)
-        const dailyData = response.records || response.data || []
+        // API返回的数据结构: response.records (实际数据数组)
+        const dailyData = response.records || []
         const chartData = dailyData.map((item: any) => ({
           date: formatDateForChart(item.date),
           revenue: item.revenue,
