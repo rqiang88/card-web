@@ -14,6 +14,7 @@ export interface RecentConsumption {
   customerName: string
   customerGender: string
   packageName: string
+  packageType?: string
   amount?: number
 }
 
@@ -52,6 +53,18 @@ export interface RevenueStats {
   consumptionCount: number
 }
 
+export interface WeeklyRevenueData {
+  date: string
+  revenue: number
+}
+
+export interface WeeklyRevenueResponse {
+  records: WeeklyRevenueData[]
+  totalRevenue: number
+  startDate: string
+  endDate: string
+}
+
 export const dashboardApi = {
   // 获取最新会员
   getLatestMembers: async (): Promise<LatestMember[]> => {
@@ -76,6 +89,7 @@ export const dashboardApi = {
       customerName: consumption.member?.name,
       customerGender: consumption.member?.gender,
       packageName: consumption.package?.name,
+      packageType: consumption.package?.packType,
       amount: consumption.amount
         ? parseFloat(consumption.amount)
         : parseFloat(consumption.package?.salePrice || 0),
@@ -124,8 +138,12 @@ export const dashboardApi = {
     const currentMonth = new Date().toISOString().slice(0, 7)
 
     // 处理后端返回的数据结构
-    const rechargeItems = rechargesResponse?.data?.data?.items || rechargesResponse?.data?.items || []
-    const memberTotal = membersResponse?.data?.data?.total || membersResponse?.data?.total || 0
+    const rechargeItems =
+      rechargesResponse?.data?.data?.items ||
+      rechargesResponse?.data?.items ||
+      []
+    const memberTotal =
+      membersResponse?.data?.data?.total || membersResponse?.data?.total || 0
 
     // 计算今日充值
     const todayRecharges = rechargeItems.filter((r: any) =>
@@ -154,12 +172,22 @@ export const dashboardApi = {
   },
 
   // 获取营收统计数据
-  getRevenueStats: async (startDate?: string, endDate?: string): Promise<RevenueStats> => {
+  getRevenueStats: async (
+    startDate?: string,
+    endDate?: string
+  ): Promise<RevenueStats> => {
     const data: any = {}
     if (startDate) data.startDate = startDate
     if (endDate) data.endDate = endDate
-    
+
     const response = await apiClient.post('/stats/revenues', data)
+    // 后端返回的数据结构是 {success: true, data: {...}, message: "success", timestamp: "..."}
+    return response.data?.data || response.data
+  },
+
+  // 获取周营收趋势数据
+  getWeeklyRevenues: async (): Promise<WeeklyRevenueResponse> => {
+    const response = await apiClient.post('/stats/weekly/revenues')
     // 后端返回的数据结构是 {success: true, data: {...}, message: "success", timestamp: "..."}
     return response.data?.data || response.data
   },

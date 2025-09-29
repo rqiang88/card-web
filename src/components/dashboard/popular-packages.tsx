@@ -1,7 +1,10 @@
 'use client'
 
-import { Package, TrendingUp, Star, Eye } from 'lucide-react'
+import { Eye, Package, Star, TrendingUp } from 'lucide-react'
+
 import { useEffect, useState } from 'react'
+
+import { useRouter } from 'next/navigation'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { dashboardApi } from '@/lib/api/dashboard'
@@ -10,6 +13,7 @@ import type { PopularPackage } from '@/lib/api/dashboard'
 export function PopularPackages() {
   const [packages, setPackages] = useState<PopularPackage[]>([])
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchPopularPackages = async () => {
@@ -38,11 +42,11 @@ export function PopularPackages() {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      '美容': 'bg-pink-100 text-pink-800',
-      '健身': 'bg-blue-100 text-blue-800',
-      '娱乐': 'bg-purple-100 text-purple-800',
-      '餐饮': 'bg-orange-100 text-orange-800',
-      '其他': 'bg-gray-100 text-gray-800',
+      美容: 'bg-pink-100 text-pink-800',
+      健身: 'bg-blue-100 text-blue-800',
+      娱乐: 'bg-purple-100 text-purple-800',
+      餐饮: 'bg-orange-100 text-orange-800',
+      其他: 'bg-gray-100 text-gray-800',
     }
     return colors[category as keyof typeof colors] || colors['其他']
   }
@@ -65,9 +69,12 @@ export function PopularPackages() {
           </div>
           热门套餐
         </CardTitle>
-        <button className="text-sm text-primary hover:underline flex items-center gap-1">
+        <button
+          onClick={() => router.push('/dashboard/packages')}
+          className="text-sm text-primary hover:underline flex items-center gap-1 transition-colors hover:text-primary/80"
+        >
           <Eye className="w-3 h-3" />
-          查看全部
+          查看更多
         </button>
       </CardHeader>
       <CardContent>
@@ -83,20 +90,31 @@ export function PopularPackages() {
               return (
                 <div
                   key={pkg.id}
-                  className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-xl transition-all duration-300 hover:shadow-sm"
+                  onClick={() => router.push(`/dashboard/packages/${pkg.id}`)}
+                  className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-xl transition-all duration-300 hover:shadow-sm cursor-pointer"
                 >
                   <div className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
-                      index < 3 ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white' : 'bg-muted'
-                    }`}>
-                      <span className={index < 3 ? 'text-white' : rankIcon.color}>
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
+                        index < 3
+                          ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white'
+                          : 'bg-muted'
+                      }`}
+                    >
+                      <span
+                        className={index < 3 ? 'text-white' : rankIcon.color}
+                      >
                         {index < 3 ? rankIcon.icon : index + 1}
                       </span>
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-foreground">{pkg.name}</p>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(pkg.category)}`}>
+                        <p className="font-medium text-foreground">
+                          {pkg.name}
+                        </p>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(pkg.category)}`}
+                        >
                           {pkg.category}
                         </span>
                       </div>

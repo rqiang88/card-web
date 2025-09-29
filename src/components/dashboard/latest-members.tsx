@@ -1,7 +1,10 @@
 'use client'
 
-import { Calendar, Phone, User, Users } from 'lucide-react'
+import { Calendar, Eye, Phone, User, Users } from 'lucide-react'
+
 import { useEffect, useState } from 'react'
+
+import { useRouter } from 'next/navigation'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { dashboardApi } from '@/lib/api/dashboard'
@@ -10,6 +13,7 @@ import type { LatestMember } from '@/lib/api/dashboard'
 export function LatestMembers() {
   const [members, setMembers] = useState<LatestMember[]>([])
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchLatestMembers = async () => {
@@ -58,7 +62,10 @@ export function LatestMembers() {
         <CardContent>
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center space-x-3 animate-pulse">
+              <div
+                key={i}
+                className="flex items-center space-x-3 animate-pulse"
+              >
                 <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
                 <div className="flex-1 space-y-1">
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -75,8 +82,17 @@ export function LatestMembers() {
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">最新会员</CardTitle>
-        <Users className="h-4 w-4 text-muted-foreground" />
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <Users className="h-4 w-4 text-muted-foreground" />
+          最新会员
+        </CardTitle>
+        <button
+          onClick={() => router.push('/dashboard/members')}
+          className="text-xs text-primary hover:underline flex items-center gap-1 transition-colors hover:text-primary/80"
+        >
+          <Eye className="w-3 h-3" />
+          查看更多
+        </button>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -91,7 +107,8 @@ export function LatestMembers() {
               return (
                 <div
                   key={member.id}
-                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                  onClick={() => router.push(`/dashboard/members/${member.id}`)}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
                 >
                   <div className="relative">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -117,7 +134,9 @@ export function LatestMembers() {
                     </div>
                     <div className="flex items-center text-xs text-muted-foreground mt-1">
                       <Phone className="h-3 w-3 mr-1" />
-                      <span className="truncate">{member.phone || '未知手机号'}</span>
+                      <span className="truncate">
+                        {member.phone || '未知手机号'}
+                      </span>
                     </div>
                   </div>
                 </div>

@@ -1,7 +1,10 @@
 'use client'
 
-import { Calendar, CreditCard, Package, Wallet } from 'lucide-react'
+import { Calendar, CreditCard, Eye, Package, Wallet } from 'lucide-react'
+
 import { useEffect, useState } from 'react'
+
+import { useRouter } from 'next/navigation'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { dashboardApi } from '@/lib/api/dashboard'
@@ -10,6 +13,7 @@ import type { RecentRecharge } from '@/lib/api/dashboard'
 export function RecentRecharges() {
   const [recharges, setRecharges] = useState<RecentRecharge[]>([])
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchRecentRecharges = async () => {
@@ -62,7 +66,10 @@ export function RecentRecharges() {
         <CardContent>
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center space-x-3 animate-pulse">
+              <div
+                key={i}
+                className="flex items-center space-x-3 animate-pulse"
+              >
                 <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
                 <div className="flex-1 space-y-1">
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -80,8 +87,17 @@ export function RecentRecharges() {
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">最近充值</CardTitle>
-        <Wallet className="h-4 w-4 text-muted-foreground" />
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <Wallet className="h-4 w-4 text-muted-foreground" />
+          最近充值
+        </CardTitle>
+        <button
+          onClick={() => router.push('/dashboard/recharges')}
+          className="text-xs text-primary hover:underline flex items-center gap-1 transition-colors hover:text-primary/80"
+        >
+          <Eye className="w-3 h-3" />
+          查看更多
+        </button>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -96,7 +112,10 @@ export function RecentRecharges() {
               return (
                 <div
                   key={recharge.id}
-                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                  onClick={() =>
+                    router.push(`/dashboard/recharges/${recharge.id}`)
+                  }
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
                 >
                   <div className="relative">
                     <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
@@ -123,7 +142,9 @@ export function RecentRecharges() {
                     <div className="flex items-center justify-between mt-1">
                       <div className="flex items-center text-xs text-muted-foreground">
                         <Package className="h-3 w-3 mr-1" />
-                        <span className="truncate">{recharge.packageName || '余额充值'}</span>
+                        <span className="truncate">
+                          {recharge.packageName || '余额充值'}
+                        </span>
                       </div>
                       <div className="flex items-center text-sm font-medium text-green-600">
                         <CreditCard className="h-3 w-3 mr-1" />

@@ -1,7 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { Calendar } from 'lucide-react'
+
+import { useState } from 'react'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -44,7 +46,8 @@ export function DateRangePicker({
   const formatDateRange = () => {
     if (!startDate && !endDate) return '选择日期范围'
     const formatDate = (date: Date) => date.toLocaleDateString('zh-CN')
-    if (startDate && endDate) return `${formatDate(startDate)} 至 ${formatDate(endDate)}`
+    if (startDate && endDate)
+      return `${formatDate(startDate)} 至 ${formatDate(endDate)}`
     if (startDate) return `从 ${formatDate(startDate)}`
     if (endDate) return `至 ${formatDate(endDate)}`
     return '选择日期范围'
@@ -63,7 +66,7 @@ export function DateRangePicker({
         <Calendar className="mr-2 h-4 w-4" />
         {formatDateRange()}
       </Button>
-      
+
       {isOpen && (
         <div className="absolute top-full left-0 z-50 mt-2 w-80 rounded-md border bg-background p-4 shadow-lg">
           <div className="space-y-4">
@@ -84,7 +87,11 @@ export function DateRangePicker({
               />
             </div>
             <div className="flex justify-between space-x-2">
-              <Button variant="outline" onClick={handleClear} className="flex-1">
+              <Button
+                variant="outline"
+                onClick={handleClear}
+                className="flex-1"
+              >
                 清除
               </Button>
               <Button onClick={handleApply} className="flex-1">
