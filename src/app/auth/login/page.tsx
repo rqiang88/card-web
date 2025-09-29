@@ -50,6 +50,8 @@ export default function LoginPage() {
 
       // 模拟成功登录
       if (data.username === 'admin' && data.password === '123456') {
+        // 设置模拟token
+        localStorage.setItem('token', 'mock-jwt-token-12345')
         toast({
           title: '登录成功',
           description: '欢迎回来！',

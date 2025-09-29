@@ -178,13 +178,13 @@ export const rechargeApi = {
 
 // 统计数据相关 API
 export const statsApi = {
-  getDashboardStats: () => apiClient.get('/stats/dashboard'),
+  getDashboardStats: (data?: any) => apiClient.post('/stats/dashboard', data),
 
-  getMemberStats: (params?: any) => apiClient.get('/stats/members', params),
+  getMemberStats: (data?: any) => apiClient.post('/stats/members', data),
 
-  getRevenueStats: (params?: any) => apiClient.get('/stats/revenue', params),
+  getRevenueStats: (data?: any) => apiClient.post('/stats/revenues', data),
 
-  getPackageStats: (params?: any) => apiClient.get('/stats/packages', params),
+  getPackageStats: (data?: any) => apiClient.post('/stats/packages', data),
 }
 
 export default api
